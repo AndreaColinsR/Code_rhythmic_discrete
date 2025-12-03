@@ -40,21 +40,26 @@ for i_animal=1:numel(animal)
 
         [scores,explained,idx_pos,idx_dir,idx_dist,baseline,FR,idx_Ncycle,exec]=extract_trajectories_all(animal{i_animal},region_name{i_region},timesmov,dataset_path);
         % impose that the origin of the subspace correspond to the average neural
-        % activity of the population 1 s before the movement start
+        % activity of the population 1.5 s before the movement start
         scores=scores-baseline;
         scores=scores(:,1:ndims);
 
         %% sanity check
 
-        % this_cond=idx_dir==1 & idx_pos==1 & idx_dist==4;
+        % this_cond=idx_dir==1 & idx_pos==1 & idx_dist==7;
         % this_cond2=idx_dir==1 & idx_pos==1 & idx_dist==0.5;
-        %
+        % i_cond=find(this_cond);
+        % i_cond2=find(this_cond2);
+        % 
         % figure
         % plot3(scores(this_cond,1),scores(this_cond,2),scores(this_cond,3),'k')
         % hold on
         % plot3(scores(this_cond2,1),scores(this_cond2,2),scores(this_cond2,3),'r')
         % title(region_name{i_region})
-        %
+        % plot3(scores(i_cond(1),1),scores(i_cond(1),2),scores(i_cond(1),3),'.k','MarkerSize',12)
+        % plot3(scores(i_cond2(1),1),scores(i_cond2(1),2),scores(i_cond2(1),3),'.r','MarkerSize',12)
+
+
 
         %% save into a file
         save(['.\Output_files\scores_' animal{i_animal} '_' region_name{i_region} '.mat'],'scores','explained', 'idx_dir','idx_Ncycle','idx_pos','idx_dist','FR','exec')

@@ -1,0 +1,256 @@
+function compare_network_families(region_name,plot_supp)
+tic
+
+hyp={'continuous','separate'};
+animal={'Cousteau','Drake'};
+
+type=1;
+Nnets=40;
+my_dir=pwd;
+
+if strcmp(region_name,'M1')
+    %folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\Clean'
+    %    '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_start_clean'
+    %    '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_end'
+    %    '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_both'};
+
+
+    folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\Clean'
+        '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_start_clean'};
+
+    output_region='EMG';
+
+elseif strcmp(region_name,'SMA')
+    folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\M1_long_input'
+        '.\Code\Training_RNNs\Trained_Hyp_Separate\M1_long_input'};
+
+    output_region='M1';
+
+end
+
+results=get_neural_trajectories_info(region_name,output_region,animal);
+
+figW=figure;
+Nfamilies=numel(folders);
+corr_CC=nan(Nnets*Nfamilies,4);
+idx_family=corr_CC;
+NNets=20;
+Angle_rotRNN=nan(NNets*2,Nfamilies);
+OutW=nan(NNets*2,Nfamilies);
+MinDist=nan(NNets*2,2,Nfamilies);
+Dist_prep_onset=nan(NNets*2,Nfamilies);
+
+for i_family=1:Nfamilies
+
+
+    cd(folders{i_family})
+    if i_family>1
+        type=2;
+    end
+    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)]=Extrapolating_all_networks(hyp{type},region_name,my_dir,plot_supp,figW,i_family);
+    idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
+
+    cd(my_dir)
+end
+
+
+
+figure(figW)
+
+subplot(5,4,4)
+hold on
+plot(0, mean(results.rEMG),'.-','Color',[0 1 1])
+ylabel('CCA EMG')
+xlim([-0.5 2.5])
+xticks(0:3)
+ylim([0 1.1])
+xticklabels({'Between animals','Same-control','Different-control'})
+
+
+subplot(5,4,8)
+hold on
+plot(0, mean(results.r),'.k')
+ylabel('Average corr CC')
+xlabel('Family type')
+ylim([0.2 0.8])
+xticks(0:4)
+ylim([0 1.1])
+xticklabels({'Between animals','Same-control','Different-control'})
+xlim([-0.5 5.5])
+box off
+
+[~,pval_CCA_families]=ttest2(corr_CC(1:Nnets,1),corr_CC(Nnets+1:end,1));
+text(0,0.9,num2str(pval_CCA_families,'%.2e'),'Units','normalized')
+
+subplot(4,4,12)
+hold on
+plot(0, results.Dist_all(:,1),'.k')
+
+plot_fancy_errorbars(1,Dist_prep_onset(:,1),[1 0 0])
+plot_fancy_errorbars(2,Dist_prep_onset(:,2),[0 1 0])
+%plot(0, results.Per_prep(1,1),'.k')
+%plot(0.2, results.Per_prep(1,2),'.k')
+xlim([-0.5 2.5])
+xticks(0:2)
+xticklabels({region_name,'Same-control','Different-control'})
+ylim([-0.1 1])
+
+
+% test angle between rotations of rhtyhmic movements in different
+% directions are different across families
+%[~,pvalAngDir]=ttest2(Angle_rotRNN(:,1),Angle_rotRNN(:,2))
+
+
+% test if Output weights are significantly different across families
+%[~,pvalOutW]=ttest2(OutW(:,1),OutW(:,2))
+
+%
+% nans=isnan(corr_CC(:,1));
+% corr_CC2=corr_CC(~nans,1);
+% idx_family=idx_family(~nans);
+% [p,t,stats]=anova1(corr_CC2,idx_family)
+% [c,m,h,gnames] = multcompare(stats,"CriticalValueType","dunnett");
+%
+
+
+
+%% supplementary figures
+if plot_supp
+    subplot(5,4,20)
+    hold on
+    plot(0, results.Angle_exec,'.k')
+    xlim([-.5 2.5])
+    ylim([-10 120])
+    ylabel('Angle rot discrete vs rot')
+    xticks(0:4)
+    xticklabels({region_name,'Same-control','Different-control'})
+    box off
+end
+
+if strcmp(region_name,'M1')
+    colour_dist=plasma(5);
+    M1Dist05=results.MinDist_all(:,1);
+    subplot(4,4,16)
+    hold on
+    plot_fancy_errorbars(1,MinDist(:,1,1),colour_dist(1,:))
+    plot_fancy_errorbars(2,MinDist(:,1,2),colour_dist(1,:))
+    plot_fancy_errorbars(0,M1Dist05,colour_dist(1,:))
+
+
+    %plot_fancy_errorbars(1,MinDist(:,2,1),colour_dist(2,:))
+    %plot_fancy_errorbars(2,MinDist(:,2,2),colour_dist(2,:))
+    M1Dist1=results.MinDist_all(:,2);
+    %plot(0,M1Dist1,'.','Color',colour_dist(2,:))
+
+    xticks(0:2)
+    xticklabels({'M1','Same-control','Different-control'})
+    xlim([-0.5 2.5])
+
+
+    %% statistics
+    % is there a difference between networks families?
+    [~,pvalDist05]=ttest2(MinDist(:,1,1),MinDist(:,1,2));
+
+    disp(['P value distance to attractor N cycle 0.5 = ' num2str(pvalDist05)])
+
+    [~,pvalDist1]=ttest2(MinDist(:,2,1),MinDist(:,2,2));
+    disp(['P value distance to attractor N cycle 1 = ' num2str(pvalDist1)])
+
+    % is there a difference between M1 and the RNNs?
+    % same
+    [~,pvalDist05M1_same]=ttest2(MinDist(:,1,1),M1Dist05);
+    % different
+    [~,pvalDist05M1_different]=ttest2(MinDist(:,1,2),M1Dist05);
+
+    disp(['P value distance to attractor M1-RNN_same N cycle 0.5 = ' num2str(pvalDist05M1_same)])
+    disp(['P value distance to attractor M1-RNN_different N cycle 0.5 = ' num2str(pvalDist05M1_different)])
+
+    %% same for 1 cycle
+
+    [~,pvalDist1M1_same]=ttest2(MinDist(:,2,1),M1Dist1);
+    [~,pvalDist1M1_different]=ttest2(MinDist(:,2,2),M1Dist1);
+
+    disp(['P value distance to attractor M1-RNN_same N cycle 1 = ' num2str(pvalDist1M1_same)])
+    disp(['P value distance to attractor M1-RNN_different N cycle 1 = ' num2str(pvalDist1M1_different)])
+
+    subplot(4,4,13)
+    hold on
+    plot([-1000 4000],[mean(results.Mean_over_time) mean(results.Mean_over_time)],'Color',[0.5 0.5 0.5])
+
+    subplot(4,4,14)
+    hold on
+    plot([-1000 4000],[mean(results.Mean_over_time) mean(results.Mean_over_time)],'Color',[0.5 0.5 0.5])
+
+
+end
+
+if plot_supp && strcmp(region_name,'SMA')
+
+    subplot(4,4,6)
+    hold on
+    errorbar([0.5 1 2 4 7],mean(results.Init_cond,'omitnan'),std(results.Init_cond,'omitnan'),'.-k')
+    xlim([0 8])
+    xticks([0.5 1 2 4 7])
+    xlabel('Number of cycles')
+    ylabel('Position trajectory at mov onset')
+    ylim([-0.1 1])
+
+
+    %% test with SMA input trained to replicate EMG
+    % folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\SMA_EMG'
+    %     '.\Code\Training_RNNs\Trained_Hyp_Separate\SMA_EMG'};
+    %
+    % output_region='EMG';
+
+    %% Control same-control without decreasing input, just a start (dir and pos) and a stop signal
+    %   folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\M1_long_input_control'
+    %      '.\Code\Training_RNNs\Trained_Hyp_Separate\M1_long_input_control2'};
+
+end
+toc
+end
+
+function results=get_neural_trajectories_info(region_name,output_region,animal)
+%% compare aligment to subspaces across animals
+load(['.\Output_files\scores_' animal{1} '_'  region_name '.mat'],'scores','idx_dir','idx_pos','idx_dist','Angle_disc_rhythm','Per_prep','Init_cond_t','MinDist','Dist_all')
+scores1=scores;
+cond_idx1=[idx_dir,idx_pos,idx_dist];
+%Angle_rot1=Angle_rot_cycles;
+Angle_exec1=Angle_disc_rhythm;
+Per_prep1=Per_prep;
+Init_cond_t1=Init_cond_t; %% Add this to the plot
+MinDist1=MinDist;
+Dist_all1=Dist_all(end,:);
+clear scores
+
+load(['.\Output_files\scores_' animal{1} '_'  output_region '.mat'],'scores')
+scores_EMG1=scores;
+clear scores idx_dir idx_pos idx_dist Angle_rot_cycles Angle_disc_rhythm
+
+load(['.\Output_files\scores_' animal{2} '_'  region_name '.mat'],'scores','idx_dir','idx_pos','idx_dist','Angle_disc_rhythm','Per_prep','MinDist','Mean_over_time','Dist_all')
+scores2=scores;
+cond_idx2=[idx_dir,idx_pos,idx_dist];
+%Angle_rot2=Angle_rot_cycles;
+Angle_exec2=Angle_disc_rhythm;
+Per_prep2=Per_prep;
+Init_cond_t2=Init_cond_t;
+Mean_over_time1=Mean_over_time;
+MinDist2=MinDist;
+Dist_all2=Dist_all(end,:);
+clear scores
+
+results.MinDist_all=[MinDist1;MinDist2];
+
+load(['.\Output_files\scores_' animal{2} '_'  output_region '.mat'],'scores')
+scores_EMG2=scores;
+clear scores
+
+results.r=CCA_RNN_M1(scores1,cond_idx1,scores2,cond_idx2);
+results.rEMG=CCA_RNN_M1(scores_EMG1(:,1:4),cond_idx1,scores_EMG2(:,1:4),cond_idx2);
+results.Per_prep=[Per_prep1', Per_prep2'];
+results.Init_cond=[Init_cond_t1;Init_cond_t2];
+results.Angle_exec=[Angle_exec1 Angle_exec2];
+Mean_over_time2=Mean_over_time;
+results.Mean_over_time=mean([Mean_over_time1(1) Mean_over_time2(1)]);
+results.Dist_all=[Dist_all1;Dist_all2];
+end
