@@ -20,18 +20,19 @@ dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\co
 
 dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
-plot_supp = 0; % 1 to plot supplementary figures, 0 otherwise
+plot_supp = 1; % 1 to plot supplementary figures, 0 otherwise
 
 
 %% add necessary toolboxes - not necessary for code review
-%%addpath(genpath('C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution'))
-%%addpath(genpath('C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016'))
+addpath(genpath(jPCA_path))
+addpath(genpath(dPCA_path))
 
 
 
 %% 0. Define PCA trajectories and save results in Output_files folder
 mkdir Output_files
 %create_all_output_files(dataset_path)
+
 
 %% Figure 1
 animal = 'Drake';
@@ -42,11 +43,15 @@ animal = 'Drake';
 
 %% Train neural networks here
 % Create inputs and outputs for the RNNs
-
+% Create_Inputs_RNN
 
 %% Figure 2
 region_name='M1';
-%compare_network_families(region_name,plot_supp)
+figM1=figure;
+figSMA=figure;
+%% Analyse neural recordings 
+%testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp)
+compare_network_families(region_name,figM1,plot_supp)
 
 
 %% Video: 
@@ -58,7 +63,8 @@ i_pos = 1;
 
 %% Figure 3
 region_name='SMA';
-% compare_network_families(region_name,plot_supp)
+testing_Cortical_Data_as_RNN('SMA',figSMA,plot_supp)
+compare_network_families(region_name,plot_supp)
 
 %% Video:
 animal = 'Cousteau';

@@ -95,7 +95,7 @@ plot_fancy_errorbars(3,corr_CC(:,end-2),[0 0 0]) %shuffle test
 text(0.8,1-ifamily*0.1,num2str(pval_shuffle,'%.2e'),'Units','normalized')
 plot_fancy_errorbars(ifamily+0.5,R2(:,2),colour_animal(1,:))
 
-%% var explained 
+%% var explained
 %subplot(4,4,12)
 %hold on
 %plot_fancy_errorbars(ifamily,Percentage_all_prep(:,1),colour_animal(1,:))
@@ -113,51 +113,51 @@ Dist_prep_onset=squeeze(Dist_all_prep(end,1,:));
 
 if plot_supp
 
-%% distaces between trajectories (prep)
-t=fliplr((1:size(Dist_all_prep,1))*-10);
-subplot(4,4,1+4*(ifamily-1))
-hold on
-plot_std(t,mean(Dist_all_prep(:,1,:),3,'omitnan'),std(Dist_all_prep(:,1,:),[],3,'omitnan'),[0.9 0.5 0.5])%% N cycle
-plot_std(t,mean(Dist_all_prep(:,2,:),3,'omitnan'),std(Dist_all_prep(:,2,:),[],3,'omitnan'),[0.5 0.6 0.9])%% pos
-plot_std(t,mean(Dist_all_prep(:,3,:),3,'omitnan'),std(Dist_all_prep(:,3,:),[],3,'omitnan'),[0.5 0.5 0.5])%% dir
-ylim([-0.1 1.2])
+    %% distaces between trajectories (prep)
+    t=fliplr((1:size(Dist_all_prep,1))*-10);
+    subplot(4,4,1+4*(ifamily-1))
+    hold on
+    plot_std(t,mean(Dist_all_prep(:,1,:),3,'omitnan'),std(Dist_all_prep(:,1,:),[],3,'omitnan'),[0.9 0.5 0.5])%% N cycle
+    plot_std(t,mean(Dist_all_prep(:,2,:),3,'omitnan'),std(Dist_all_prep(:,2,:),[],3,'omitnan'),[0.5 0.6 0.9])%% pos
+    plot_std(t,mean(Dist_all_prep(:,3,:),3,'omitnan'),std(Dist_all_prep(:,3,:),[],3,'omitnan'),[0.5 0.5 0.5])%% dir
+    ylim([-0.1 1.2])
 
-%% angle between rotations in discrete and rhythmic
-subplot(5,4,20)
-hold on
-plot_fancy_errorbars(ifamily,Angle_disc_rhyth(:),colour_animal(1,:))
+    %% angle between rotations in discrete and rhythmic
+    subplot(5,4,20)
+    hold on
+    plot_fancy_errorbars(ifamily,Angle_disc_rhyth(:),colour_animal(1,:))
 
-% var explained all pars
-subplot(4,4,2)
-hold on
-errorbar(1:4,mean(Percentage_all_prep,'omitnan'),std(Percentage_all_prep,[],'omitnan'),'.-','Color',colour_animal(1,:))
-xticks(1:4)
-xticklabels({'N cycle','Direction','Pos','CI'})
+    % var explained all pars
+    subplot(4,4,2)
+    hold on
+    errorbar(1:4,mean(Percentage_all_prep,'omitnan'),std(Percentage_all_prep,[],'omitnan'),'.-','Color',colour_animal(1,:))
+    xticks(1:4)
+    xticklabels({'N cycle','Direction','Pos','CI'})
 end
 
 
 if strcmp(region_name,'SMA')
 
     %% SMA plots
-subplot(4,4,6)
-hold on
-errorbar([0.5 1 2 4 7],mean(Init_cond_t,'omitnan'),std(Init_cond_t,'omitnan'),'.-','Color',colour_animal(1,:))
+    subplot(4,4,6)
+    hold on
+    errorbar([0.5 1 2 4 7],mean(Init_cond_t,'omitnan'),std(Init_cond_t,'omitnan'),'.-','Color',colour_animal(1,:))
 
 
 else
     %% M1 plots
 
     % distace to the attractor
-subplot(4,4,13+(ifamily-1))
-hold on
-t2=(0:Nel-1)*10-1000;
-plot(t2,mean(Dist2Att_all(:,:,1),2,'omitnan'),'Color',colour_dist(1,:))
-plot(t2,mean(Dist2Att_all(:,:,2),2,'omitnan'),'Color',colour_dist(2,:))
-plot(t2,mean(Dist2Att_all(:,:,3),2,'omitnan'),'Color',colour_dist(3,:))
-plot(t2,mean(Dist2Att_all(:,:,4),2,'omitnan'),'Color',colour_dist(4,:))
-plot(t2,mean(Dist2Att_all(:,:,5),2,'omitnan'),'Color',colour_dist(5,:))
-tmpminD=min(Dist2Att_all(:,:,1:2));
-MinDist= squeeze(tmpminD);
+    subplot(4,4,13+(ifamily-1))
+    hold on
+    t2=(0:Nel-1)*10-1000;
+    plot(t2,mean(Dist2Att_all(:,:,1),2,'omitnan'),'Color',colour_dist(1,:))
+    plot(t2,mean(Dist2Att_all(:,:,2),2,'omitnan'),'Color',colour_dist(2,:))
+    plot(t2,mean(Dist2Att_all(:,:,3),2,'omitnan'),'Color',colour_dist(3,:))
+    plot(t2,mean(Dist2Att_all(:,:,4),2,'omitnan'),'Color',colour_dist(4,:))
+    plot(t2,mean(Dist2Att_all(:,:,5),2,'omitnan'),'Color',colour_dist(5,:))
+    tmpminD=min(Dist2Att_all(:,:,1:2));
+    MinDist= squeeze(tmpminD);
 end
 end
 
@@ -175,12 +175,12 @@ Npoints=[1 10];
 R2=nan(Nnetworks,2);
 
 if strcmp(hyp,'separate')
-    load(['.\..\..\EMG_data\EMG_' animal '_dir_pos_separate.mat'],'exec','idx_current_cycle')
+    load(['.\..\..\RNNs_Inputs\M1_' animal '_different.mat'],'exec','idx_current_cycle')
     training=[0,1,2,3,16,17,18,19]+1;
     test=5:16;
 
 else
-    load(['.\..\..\EMG_data\EMG_' animal '_dir_pos.mat'],'exec','idx_current_cycle')
+    load(['.\..\..\RNNs_Inputs\M1_' animal '_same.mat'],'exec','idx_current_cycle')
     training=13:20;
     test=1:12;
 
@@ -193,9 +193,6 @@ end
 exec=[exec(training,:);exec(test,:)];
 idx_current_cycle=[idx_current_cycle(training,:);idx_current_cycle(test,:)];
 Dist_all_prep=nan(100,3,Nnetworks);
-%Ndist=600;
-%Dist_all_exec=nan(Ndist,3,Nnetworks);
-%Dist_all_after=nan(Ndist,3,Nnetworks);
 Percentage_all_prep=nan(Nnetworks,4);
 
 corr_CC=nan(Nnetworks,1);
@@ -206,8 +203,6 @@ rexec=nan(Nnetworks,1);
 rend=nan(Nnetworks,1);
 Angle_rot=nan(Nnetworks,1);
 Angle_disc_rhyth=nan(Nnetworks,1);
-SV_rhythmic=nan(7,7,Nnetworks);
-SV_exec=nan(5,5,Nnetworks);
 Init_cond_t=nan(Nnetworks*4,5);
 start=1;
 
@@ -251,21 +246,16 @@ for iNet=1:Nnetworks
     net_params.O=O;
     net_params.Ob=Ob;
 
-    % Later
-    %[V2,D2]=analyse_eigs(W);
     Mean_OutW(iNet)=norm(O);
     idx_conds=[[idx_cycles_train,idx_pos_train,idx_dir_train];[idx_cycles_test,idx_pos_test,idx_dir_test]];
 
-    [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN,r_end(iNet)]=Extrapolating_trained_RNN(Input,Output,Test_input,Test_Outputs,net_params,exec,[idx_cycles_train,idx_pos_train,idx_dir_train],[idx_cycles_test,idx_pos_test,idx_dir_test],do_plot_output);
-    
+    [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN,r_end(iNet)] = Eval_RNN_all_conditions(Input,Output,Test_input,Test_Outputs,net_params,exec,[idx_cycles_train,idx_pos_train,idx_dir_train],[idx_cycles_test,idx_pos_test,idx_dir_test],do_plot_output);
 
 
+     % post process only if succesful
     if R2(iNet,2)>=0.8
 
-
         [idx_dir,idx_pos,idx_Ncycle,idx_dist,prep,exec2,startexec,endexec]=find_idx_conds(trials_idx,idx_conds,idx_current_cycle);
-
-
 
         %% LDS
         if strcmp(region_name,'M1') && plot_supp
@@ -303,17 +293,12 @@ for iNet=1:Nnetworks
 
         %% prepare for dPCA
         % dPCA Prep
-        [execdata,prepdata,endexecdata]=get_prep_exec_after_FR(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
+        [~,prepdata,~]=get_prep_exec_after_FR(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
         %plot_by_dir_and_cycle(endexecdata.scores,endexecdata.ndir,endexecdata.npos,endexecdata.ndist,true)
 
         figure(figW)
         %% Euclidean distance between trajectories
         [~,~,~,Dist_all_prep(:,:,iNet)]=compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist,Npoints);
-
-        %[~,~,~,Dist_all_exec(:,:,iNet)]=compare_traj_directions(execdata.scores(:,1:ndims),execdata.ndir,execdata.npos,execdata.ndist,Npoints);
-
-        %[~,~,~,Dist_all_after(:,:,iNet)]=compare_traj_directions(endexecdata.scores(:,1:ndims),endexecdata.ndir,endexecdata.npos,endexecdata.ndist,Npoints);
-
 
         %figure
         if strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_14_SLen300v2.mat') ||  strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_12_Orth_start.mat')  || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
@@ -328,19 +313,19 @@ for iNet=1:Nnetworks
             pos3 = [0.2448 0.5523 0.0604 0.0956];
 
             if ifamily==1
-            ax=[axes('Position',pos1)...
-                axes('Position',pos2)...
-                axes('Position',pos3)];
+                ax=[axes('Position',pos1)...
+                    axes('Position',pos2)...
+                    axes('Position',pos3)];
             else
                 pos1(1)=pos1(1)+0.3;
                 pos2(1)=pos2(1)+0.3;
                 pos3(1)=pos3(1)+0.3;
                 ax=[axes('Position',pos1)...
-                axes('Position',pos2)...
-                axes('Position',pos3)];
+                    axes('Position',pos2)...
+                    axes('Position',pos3)];
             end
-           
-            
+
+
             Plot_pca_ncycles(PC_this_example,idx_dir,idx_pos,idx_dist,ax)
 
             idx_rhythmic=find(idx_dir==2 & idx_pos==1 & idx_dist==7);
@@ -358,7 +343,7 @@ for iNet=1:Nnetworks
 
 
         %do_plot_pred=1;
-        [Angle_disc_rhyth(iNet),SV_rhythmic(:,:,iNet),SV_exec(:,:,iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred);
+        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred);
         start=start+4;
 
         if plot_supp && strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousDrake_12_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
@@ -371,11 +356,6 @@ for iNet=1:Nnetworks
         end
         [~,Percentage_all_prep(iNet,:)]=dPCA_across_conditions(prepdata.FR-mean(prepdata.FR),prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot);
 
-        %figure
-        %[Var,Percentage_all_exec]=dPCA_across_conditions(execdata.FR-mean(execdata.FR),execdata.ndir,execdata.npos,execdata.ndist,do_plot);
-        %figure
-        %[Var,Percentage_allend]=dPCA_across_conditions(endexecdata.FR-mean(endexecdata.FR),endexecdata.ndir,endexecdata.npos,endexecdata.ndist,do_plot);
-
         Dist2Att_all(1:size(Dist2Att,1),iNet,:)=mean(Dist2Att(:,:,:),2); % case N cycle 0.5
 
 
@@ -386,41 +366,8 @@ end
 
 Animal=isempty(strfind(ff(1).name,'Cousteau'));
 
-
-
-% figure(figW)
-%t=fliplr((1:size(Dist_all_prep,1))*-10);
-% subplot(Nplots,Nplots,1+Nplots*(ifamily-1))
-% hold on
-% plot_std(t,mean(Dist_all_prep(:,1,:),3,'omitnan'),std(Dist_all_prep(:,1,:),[],3,'omitnan'),[0.9 0.1 0.1])
-% plot_std(t,mean(Dist_all_prep(:,2,:),3,'omitnan'),std(Dist_all_prep(:,2,:),[],3,'omitnan'),[0.5 0.5 0.9])
-% plot_std(t,mean(Dist_all_prep(:,3,:),3,'omitnan'),std(Dist_all_prep(:,3,:),[],3,'omitnan'),[0.5 0.5 0.5])
-% ylim([-0.1 1.2])
-
-
-
 SuccesfulNets=sum(R2(:,2)>=0.8);
 disp(['Succesfully trained networks = ' num2str(SuccesfulNets) ' of ' num2str(Nnetworks)])
-
-
-%      subplot(Nplots,Nplots,7+Nplots*(ifamily-1))
-%      hold on
-%      t2=(0:Nel-1)*10;
-%      plot_std(t2,median(Dist2Att_all(:,:,1),2,'omitnan'),std(Dist2Att_all(:,:,1),[],2,'omitnan'),colour_net)
-%      plot_std(t2,median(Dist2Att_all(:,:,2),2,'omitnan'),std(Dist2Att_all(:,:,2),[],2,'omitnan'),colour_dist(4,:))
-
-%% Shared Variance
-% ax_SV1=subplot(Nplots,Nplots,1+Nplots*(ifamily+1)+Animal);
-% imagesc(mean(SV_rhythmic,3,'omitnan'))
-% colorbar
-% axis square
-% colormap(ax_SV1,flipud(pink))
-% clim([0 1])
-% xlabel('N cycles')
-% ylabel('N cycles')
-% xticks(1:7)
-% title(animal)
-
 
 
 
@@ -472,19 +419,6 @@ Results.r_end=r_end;
 Results.Dist2Att_all=Dist2Att_all;
 end
 
-% function [V2,D2]=analyse_eigs(W)
-% [V,D] = eig(W);
-% %sort by descending magnitud
-% [D_abs,idx]=sort(sum(abs(D)),'descend');
-% V=V(:,idx);
-% D=D(:,idx);
-% %plot(D_abs./sum(D_abs))
-% %[~,ndim]=min(diff(D_abs));
-% ndim=find(cumsum(D_abs)./sum(D_abs)>0.2,1,'first');
-% D2=sum(D(1:ndim,1:ndim))';
-% V2=V(:,1:ndim);
-% end
-
 function [idx_dir,idx_pos,idx_Ncycle,idx_dist,prep,exec,startexec,endexec]=find_idx_conds(trials_idx,idx_conds,idx_current_cycle)
 
 Nconds=max(trials_idx);
@@ -513,8 +447,6 @@ for i_cond=1:Nconds
     % prep idx
     prep(this_cond(101:end))=0;
 
-    % first half cycle
-    %[max(idx_current_cycle(i_cond,1:numel(this_cond)),[],'omitnan') idx_conds(i_cond,1)]
 
     idx_mov_end=find(~isnan(idx_current_cycle(i_cond,:)),1,'last');
 

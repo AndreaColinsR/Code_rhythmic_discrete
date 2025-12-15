@@ -1,5 +1,4 @@
-function compare_network_families(region_name,plot_supp)
-tic
+function compare_network_families(region_name,figW,plot_supp)
 
 hyp={'continuous','separate'};
 animal={'Cousteau','Drake'};
@@ -15,14 +14,17 @@ if strcmp(region_name,'M1')
     %    '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_both'};
 
 
-    folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\Clean'
-        '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_start_clean'};
+    %folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\Clean'
+    %    '.\Code\Training_RNNs\Trained_Hyp_Separate\Orthogonal_start_clean'};
+
+    folders = {'.\Output_files\TrainedRNNs\M1_same'
+        '.\Output_files\TrainedRNNs\M1_same'};
 
     output_region='EMG';
 
 elseif strcmp(region_name,'SMA')
-    folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\M1_long_input'
-        '.\Code\Training_RNNs\Trained_Hyp_Separate\M1_long_input'};
+    folders = {'.\Output_files\TrainedRNNs\SMA_same'
+        '.\Output_files\TrainedRNNs\SMA_same'};
 
     output_region='M1';
 
@@ -30,7 +32,7 @@ end
 
 results=get_neural_trajectories_info(region_name,output_region,animal);
 
-figW=figure;
+
 Nfamilies=numel(folders);
 corr_CC=nan(Nnets*Nfamilies,4);
 idx_family=corr_CC;
@@ -44,10 +46,11 @@ for i_family=1:Nfamilies
 
 
     cd(folders{i_family})
+    addpath('.\..\..\..\')
     if i_family>1
         type=2;
     end
-    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)]=Extrapolating_all_networks(hyp{type},region_name,my_dir,plot_supp,figW,i_family);
+    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Extrapolating_all_networks(hyp{type},region_name,my_dir,plot_supp,figW,i_family);
     idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
 
     cd(my_dir)
