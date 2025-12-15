@@ -1,5 +1,4 @@
 function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_dir,idx_pos,idx_cycle,exec,idx_Ncycle,do_plot_pred,column)
-%%% Working on this function
 %% Check what plots are really necessary and remove everything else
 % Angle_dir angle between rotational planes of discrete and rhythmic
 % movements
