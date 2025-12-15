@@ -1,4 +1,4 @@
-function compare_network_families(region_name,figW,plot_supp,fig_supp_prep)
+function compare_network_families(region_name,figW,plot_supp)
 
 hyp={'continuous','separate'};
 animal={'Cousteau','Drake'};
@@ -36,19 +36,17 @@ OutW=nan(NNets*2,Nfamilies);
 MinDist=nan(NNets*2,2,Nfamilies);
 Dist_prep_onset=nan(NNets*2,Nfamilies);
 
-
 for i_family=1:Nfamilies
 
 
     cd(folders{i_family})
-    addpath('.\..\..\..\') %% add path of main code
+    addpath('.\..\..\..\') %% add 
     if i_family>1
         type = 2;
     else 
         type = 1;
     end
-
-    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp,figW,i_family,fig_supp_prep);
+    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Extrapolating_all_networks(hyp{type},region_name,my_dir,plot_supp,figW,i_family);
     idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
 
     cd(my_dir)

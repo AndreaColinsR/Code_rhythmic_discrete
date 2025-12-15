@@ -1,5 +1,5 @@
-function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_dir,idx_pos,idx_cycle,exec,idx_Ncycle,do_plot_pred,column)
-%% Check what plots are really necessary and remove everything else
+function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_dir,idx_pos,idx_cycle,exec,idx_Ncycle,do_plot_pred,column,fig_supp)
+%% 
 % Angle_dir angle between rotational planes of discrete and rhythmic
 % movements
 % Dist2Att is the distance to the limit cycle attractor
@@ -26,7 +26,7 @@ colour_dir=[[115, 80, 185];[87, 204, 153]]./255;%[[194 165 207];[166 219 160]]./
 colour_ndist=plasma(Ncycle);
 
 if do_plot_pred
-    figure
+    figure(fig_supp)
 end
 
 

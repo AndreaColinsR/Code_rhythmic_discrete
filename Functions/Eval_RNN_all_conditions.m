@@ -1,7 +1,6 @@
 function [scores_all,trials_idx,R2,states,Output_edit,Output_RNN,r_end]=Eval_RNN_all_conditions(Input,Output,InputTest,OutputTest,NetParams,exec,idx_trial_train,idx_trial_test,do_plot_output)
 %% aim: this function evaluates the network using the inputs that were used to trained it and extra inputs to test how well extrapolates to other problems
 
-% idx_trials= Ncycles,Init_pos
 idx_all_trials=[idx_trial_train;idx_trial_test];
 
 Ntimes=size(Input,1);
@@ -12,23 +11,20 @@ Ncycles=size(idc,1);
 Noutputs=size(OutputTest,3);
 
 
-
-do_plot=0;
-
-
 %% Evaluate training
-[~,trials_idx,R2,Output_RNN,states_train,Output_edit]=Simulating_trained_RNN_EMG_Hyp(Input,NetParams,Output,exec(1:size(idx_trial_train,1),:),idx_trial_train,do_plot);
+[~,trials_idx,R2,Output_RNN,states_train,Output_edit] = Simulating_trained_RNNs(Input,NetParams,Output,exec(1:size(idx_trial_train,1),:));
 
 %% Evaluate testing
+[~,trials_idx_test,R2_test,Output_RNNTest,states_test,Output_edittest] = Simulating_trained_RNNs(InputTest,NetParams,OutputTest,exec(size(idx_trial_train,1)+1:end,:));
 
 
-[~,trials_idx_test,R2_test,Output_RNNTest,states_test,Output_edittest]=Simulating_trained_RNN_EMG_Hyp(InputTest,NetParams,OutputTest,exec(size(idx_trial_train,1)+1:end,:),idx_trial_test,do_plot);
 trials_idx=[trials_idx;trials_idx_test+max(trials_idx)];
 Input=[Input,InputTest];
-Output=[Output,OutputTest];
 Output_edit=[Output_edit;Output_edittest];
 Output_RNN=[Output_RNN;Output_RNNTest];
 states=[states_train;states_test];
+
+
 [~,scores_all]=pca(states);
 
 
@@ -127,7 +123,6 @@ function mean_r=test_end_time(Input,scores_all,trials_idx)
 r=nan(20,1);
 
 N_in=3;
-
 
 for i=1:20
   

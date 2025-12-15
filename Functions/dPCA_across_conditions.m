@@ -44,7 +44,7 @@ end
 
 end
 
-function mydPCAplot(average_cond,W,whichMarg,explVar,margNames,conditions,iplot)
+function mydPCAplot(average_cond,W,whichMarg,explVar,margNames,conditions,column_plot)
 
 colour_dir=[[230 165 207];[166 219 160]]./255;
 
@@ -80,7 +80,7 @@ for icond=1:Nconditions
         dscore(:,Nconditions+1)=0;
     end
 
-    subplot(Nconditions+1,3,3*(icond-1)+iplot)
+    subplot(Nconditions+1,3,3*(icond-1)+column_plot)
     hold on
     box off
     xlabel('Time [ms]')
@@ -118,7 +118,7 @@ for i_pos=1:Npos
                     colour_traj=colour_dir(i_dir,:)./sqrt(i_pos);
                 end
 
-                 subplot(Nconditions+1,3,3*(icond-1)+iplot)
+                 subplot(Nconditions+1,3,3*(icond-1)+column_plot)
                 plot(t,dscore(idx,PCcond(icond,1)),'Color',colour_traj,'LineWidth',2)
 
             end

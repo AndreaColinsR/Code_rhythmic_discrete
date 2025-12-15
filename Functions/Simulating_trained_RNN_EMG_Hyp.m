@@ -1,4 +1,4 @@
-function [scores,trials_idx,R2,FRoutput,all_state,Edit_output]=Simulating_trained_RNN_EMG_Hyp(Input,NetParams,Output,exec,idx_trial_test,do_plot)
+function [scores,trials_idx,R2,FRoutput,all_state,Edit_output] = Simulating_trained_RNN_EMG_Hyp(Input,NetParams,Output,exec,idx_trial_test,do_plot)
 %% Not a clue why I need this function. Check if I can get rid of it. 
 
 Ntimes=size(Input,1);

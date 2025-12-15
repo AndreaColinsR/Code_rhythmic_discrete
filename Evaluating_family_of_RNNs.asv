@@ -1,6 +1,10 @@
-function [corr_CC,Angle_rotRNN,OutW,MinDist,Dist_prep_onset]=Extrapolating_all_networks(hyp,region_name,my_dir,plot_supp,varargin)
+function [corr_CC,Angle_rotRNN,OutW,MinDist,Dist_prep_onset]=Evaluating_family_of_RNNs(hyp,region_name,my_dir,plot_supp,varargin)
 
-if nargin==6
+if nargin==7
+    fig_supp_prep=varargin{3};
+    ifamily=varargin{2};
+    figW=varargin{1};
+elseif nargin==6
     ifamily=varargin{2};
     figW=varargin{1};
 else
@@ -8,25 +12,15 @@ else
     ifamily=1;
 end
 
+cla
 
 hold on
 
-animal={'Cousteau','Drake'}; % 'E' or 'F'
+Nnets=20;
+animal = {'Cousteau','Drake'}; % 'E' or 'F'
 Nanimal=numel(animal);
-if ifamily==1
-    colour_animal=[[1 0 0];[1 0.5 0.5]];
-
-elseif ifamily==2
-    colour_animal=[[0 1 0];[0.5 1 0.5]];
-elseif ifamily==3
-    colour_animal=[[0 0 1];[0.5 0.5 1]];
-else
-
-    colour_animal=[[0 0 0];[0.5 0.5 0.5]];
-end
 
 SuccesfulNets=zeros(Nanimal,1);
-Nnets=20;
 corr_CC=nan(Nnets*Nanimal,7);
 R2=nan(Nnets*Nanimal,2);
 Mean_OutW = nan(Nnets,2);
@@ -38,20 +32,32 @@ Nel=600;
 Dist2Att_all=nan(Nel,Nnets*Nanimal,5);
 Dist_all_prep=nan(100,3,Nnets*Nanimal);
 
+
+%% figures format
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 colour_dist=plasma(5);
+if ifamily==1
+    colour_animal=[[1 0 0];[1 0.5 0.5]];
+
+elseif ifamily==2
+    colour_animal=[[0 1 0];[0.5 1 0.5]];
+end
+
 if strcmp(region_name,'M1') && plot_supp
     figW2=figure;
 else
     figW2=nan;
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Evaluate each animal recording
 for i_animal=1:Nanimal
     load([ my_dir '\Output_files\scores_' animal{i_animal} '_'  region_name '.mat'],'scores','idx_dir','idx_pos','idx_dist')
 
-    scores_M1=scores;
     cond_idx_M1=[idx_dir,idx_pos,idx_dist];
 
-    Results=extrapolate(animal{i_animal},hyp,figW,ifamily,scores_M1,cond_idx_M1,region_name,figW2,plot_supp);
+    Results = Evaluate_this_animal(animal{i_animal},hyp,figW,ifamily,scores,cond_idx_M1,region_name,figW2,plot_supp,fig_supp_prep);
 
     Angle_rot(:,i_animal)=Results.Angle_rot;
     Angle_disc_rhyth(:,i_animal)=Results.Angle_disc_rhyth;
@@ -163,16 +169,18 @@ end
 
 
 
-function Results=extrapolate(animal,hyp,figW,ifamily,scores_M1,cond_idx_M1,region_name,figW2,plot_supp)
+function Results = Evaluate_this_animal(animal,hyp,figW,ifamily,scores_M1,cond_idx_M1,region_name,figW2,plot_supp,fig_supp_prep)
 
-ff=dir(['.\*' hyp '' animal '*']);
-figure(figW)
-
-Nnetworks=size(ff,1);
+dists=[0.5 1 2 4 7];
+Nel=600;
+start=1;
 ndims=4;
 Npoints=[1 10];
 
-R2=nan(Nnetworks,2);
+ff=dir(['.\*' hyp '' animal '*']);
+Nnetworks=size(ff,1);
+
+figure(figW)
 
 if strcmp(hyp,'separate')
     load(['.\..\..\RNNs_Inputs\M1_' animal '_different.mat'],'exec','idx_current_cycle')
@@ -194,6 +202,7 @@ exec=[exec(training,:);exec(test,:)];
 idx_current_cycle=[idx_current_cycle(training,:);idx_current_cycle(test,:)];
 Dist_all_prep=nan(100,3,Nnetworks);
 Percentage_all_prep=nan(Nnetworks,4);
+R2=nan(Nnetworks,2);
 
 corr_CC=nan(Nnetworks,1);
 corr_CC_control=nan(Nnetworks,1);
@@ -204,20 +213,16 @@ rend=nan(Nnetworks,1);
 Angle_rot=nan(Nnetworks,1);
 Angle_disc_rhyth=nan(Nnetworks,1);
 Init_cond_t=nan(Nnetworks*4,5);
-start=1;
-
-
-dists=[0.5 1 2 4 7];
-
-Nel=600;
 Dist2Att_all=nan(Nel,20,numel(dists));
+r_end=nan(Nnetworks,1);
 
 for iNet=1:Nnetworks
-    if iNet==1  && plot_supp && strcmp(animal,'Cousteau') %% strcmp(region_name,'M1')
+    if iNet==1  && plot_supp && strcmp(animal,'Cousteau')
         do_plot_output=1;
     else
         do_plot_output=0;
     end
+
     ff(iNet).name
 
     load(ff(iNet).name,'inputs','B','W','O','Ob','Output','Test_input','Test_Outputs','idx_cycles_train','idx_pos_train','idx_cycles_test','idx_pos_test','Bipos','Bdir','Btask','Bend','Initial_state','idx_dir_test','idx_dir_train')
@@ -233,7 +238,7 @@ for iNet=1:Nnetworks
 
     if exist('Btask','var')
         if ~exist('Bend','var')
-            Bend=[B;B];
+            %Bend=[B;B];
             net_params.B=[Bipos',B',Bdir',Btask'];
         else
             net_params.B=[Bipos',Bend',Bdir',Btask'];
@@ -247,15 +252,17 @@ for iNet=1:Nnetworks
     net_params.Ob=Ob;
 
     Mean_OutW(iNet)=norm(O);
-    idx_conds=[[idx_cycles_train,idx_pos_train,idx_dir_train];[idx_cycles_test,idx_pos_test,idx_dir_test]];
-
-    [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN,r_end(iNet)] = Eval_RNN_all_conditions(Input,Output,Test_input,Test_Outputs,net_params,exec,[idx_cycles_train,idx_pos_train,idx_dir_train],[idx_cycles_test,idx_pos_test,idx_dir_test],do_plot_output);
+    idx_conditions_train=[idx_cycles_train,idx_pos_train,idx_dir_train];
+    idx_conditions_test=[idx_cycles_test,idx_pos_test,idx_dir_test];
+    idx_conds_all=[idx_conditions_train;idx_conditions_test];
+    
+    [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN,r_end(iNet)] = Eval_RNN_all_conditions(Input,Output,Test_input,Test_Outputs,net_params,exec,idx_conditions_train,idx_conditions_test,do_plot_output);
 
 
      % post process only if succesful
     if R2(iNet,2)>=0.8
 
-        [idx_dir,idx_pos,idx_Ncycle,idx_dist,prep,exec2,startexec,endexec]=find_idx_conds(trials_idx,idx_conds,idx_current_cycle);
+        [idx_dir,idx_pos,idx_Ncycle,idx_dist,~,exec2]=find_idx_conds(trials_idx,idx_conds_all,idx_current_cycle);
 
         %% LDS
         if strcmp(region_name,'M1') && plot_supp
@@ -286,10 +293,6 @@ for iNet=1:Nnetworks
         idx_test_M1=ismember(cond_idx_M1(:,3),unique(idx_cycles_test));
         r=CCA_RNN_M1(scores(idx_test,:),idx_all_cond(idx_test,:),scores_M1(idx_test_M1,:),cond_idx_M1(idx_test_M1,:));
         corr_CC(iNet)=mean(r);
-
-
-        %[execdata,~]=compare_subsp_across_rot_numb(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
-        %LimitCyclePCA(execdata.FR,execdata.ndir,execdata.ndist,execdata.npos,execdata.ncycle,ndims)
 
         %% prepare for dPCA
         % dPCA Prep
@@ -325,14 +328,18 @@ for iNet=1:Nnetworks
                     axes('Position',pos3)];
             end
 
+            dt = 10;
+            hold on
+            plot3(PC_this_example(idx,1),PC_this_example(idx,2),PC_this_example(idx,3),'Color',colour_dist(i_dist,:))
+            plot3(PC_this_example(idx(1),1),PC_this_example(idx(1),2),PC_this_example(idx(1),3),'.','MarkerSize',30,'Color',colour_dist(i_dist,:))
+            plot3(PC_this_example(idx(100*dt:end-40*dt),1),scores(idx(100*dt:end-40*dt),2),scores(idx(100*dt:end-40*dt),3),'Color',colour_dist(i_dist,:),'LineWidth',3)
+    
+    view(64.5239,15.9280)
 
             Plot_pca_ncycles(PC_this_example,idx_dir,idx_pos,idx_dist,ax)
 
-            idx_rhythmic=find(idx_dir==2 & idx_pos==1 & idx_dist==7);
-            idx_discrete=find(idx_dir==2 & idx_pos==1 & idx_dist==0.5);
             Inputs_all=[Input,Test_input];
-            %play_video_rhythmic_discrete(PC_this_example(idx_rhythmic,:),PC_this_example(idx_discrete,:))
-            save(['.\..\..\..\..\Output_files\Scores_' ff(iNet).name],'PC_this_example','idx_dir','idx_pos','idx_dist','idx_Ncycle','trials_idx','Inputs_all')
+            save(['.\..\..\..\Output_files\Scores_' ff(iNet).name],'PC_this_example','idx_dir','idx_pos','idx_dist','idx_Ncycle','trials_idx','Inputs_all')
 
             % different hyp
             %     view(-116.1139,40.3981)
@@ -343,7 +350,12 @@ for iNet=1:Nnetworks
 
 
         %do_plot_pred=1;
-        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred);
+        if strcmp(hyp,'separate')
+            column = 2;
+        else 
+            column = 1;
+        end
+        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred,column,fig_supp_prep);
         start=start+4;
 
         if plot_supp && strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousDrake_12_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
@@ -354,7 +366,7 @@ for iNet=1:Nnetworks
             do_plot=0;
 
         end
-        [~,Percentage_all_prep(iNet,:)]=dPCA_across_conditions(prepdata.FR-mean(prepdata.FR),prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot);
+        [~,Percentage_all_prep(iNet,:)]=dPCA_across_conditions(prepdata.FR-mean(prepdata.FR),prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot,column);
 
         Dist2Att_all(1:size(Dist2Att,1),iNet,:)=mean(Dist2Att(:,:,:),2); % case N cycle 0.5
 

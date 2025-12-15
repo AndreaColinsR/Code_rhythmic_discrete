@@ -30,7 +30,7 @@ for i_animal=1:Nanimals
         plot_this_animal = 0;
     end
 
-    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column,fig_supp_prep);
+    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column);
     %Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
 
 

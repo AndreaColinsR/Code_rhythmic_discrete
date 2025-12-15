@@ -21,7 +21,7 @@ dataset_path = 'C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Offi
 % 
 %dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
-plot_supp = 1; % 1 to plot supplementary figures, 0 otherwise
+plot_supp = 0; % 1 to plot supplementary figures, 0 otherwise
 
 
 %% add necessary toolboxes - not necessary for code review
@@ -51,8 +51,9 @@ region_name='M1';
 figM1=figure;
 figSMA=figure;
 %% Analyse neural recordings 
-%testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp)
-compare_network_families(region_name,figM1,plot_supp)
+fig_supp_prep = figure;
+testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp,fig_supp_prep)
+compare_network_families(region_name,figM1,plot_supp,fig_supp_prep)
 
 
 %% Video: 
@@ -64,8 +65,8 @@ i_pos = 1;
 
 %% Figure 3
 region_name='SMA';
-testing_Cortical_Data_as_RNN('SMA',figSMA,plot_supp)
-compare_network_families(region_name,plot_supp)
+testing_Cortical_Data_as_RNN('SMA',figSMA,plot_supp,fig_supp_prep)
+compare_network_families(region_name,plot_supp,fig_supp_prep)
 
 %% Video:
 animal = 'Cousteau';
