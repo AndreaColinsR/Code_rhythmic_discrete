@@ -10,19 +10,19 @@ function Main_reproduce_figures
 % Andrea Colins Rodriguez
 
 %% Office
-jPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
-dPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
-dataset_path = 'C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
+% jPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
+% dPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
+% dataset_path = 'C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
 %% home
 
-% jPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
-% dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
+ jPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
+ dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
 % 
-%dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
+dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
 plot_supp = 0; % 1 to plot supplementary figures, 0 otherwise
-
+addpath('.\Functions')
 
 %% add necessary toolboxes - not necessary for code review
 addpath(genpath(jPCA_path))
@@ -35,6 +35,20 @@ mkdir Output_files
 %create_all_output_files(dataset_path)
 
 
+%%% Plot supplementary figures?
+plot_supp_figs.do_plot = 0; 
+
+if plot_supp_figs.do_plot == 1
+    % if plotting supplemetary figures, then create all the necessary
+    % figures
+    plot_supp_figs.Ouputs = figure;
+    plot_supp_figs.LDS = figure;
+    plot_supp_figs.Prep_M1 = figure;
+    plot_supp_figs.dPCA_M1 = figure;
+    plot_supp_figs.TC = figure; % temporal context
+    plot_supp_figs.Prep_SMA = figure;
+    plot_supp_figs.dPCA_SMA = figure;
+end
 %% Figure 1
 animal = 'Drake';
 %Plot_kinematics(animal,dataset_path)
@@ -49,11 +63,9 @@ animal = 'Drake';
 %% Figure 2
 region_name='M1';
 figM1=figure;
-figSMA=figure;
 %% Analyse neural recordings 
-fig_supp_prep = figure;
-testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp,fig_supp_prep)
-compare_network_families(region_name,figM1,plot_supp,fig_supp_prep)
+%testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
+%compare_network_families(region_name,figM1,plot_supp_figs)
 
 
 %% Video: 
@@ -65,8 +77,9 @@ i_pos = 1;
 
 %% Figure 3
 region_name='SMA';
-testing_Cortical_Data_as_RNN('SMA',figSMA,plot_supp,fig_supp_prep)
-compare_network_families(region_name,plot_supp,fig_supp_prep)
+figSMA=figure;
+testing_Cortical_Data_as_RNN(region_name,figSMA,plot_supp_figs)
+compare_network_families(region_name,figSMA,plot_supp_figs)
 
 %% Video:
 animal = 'Cousteau';

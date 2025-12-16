@@ -1,4 +1,4 @@
-function testing_Cortical_Data_as_RNN(region_name,figW,plot_supp,fig_supp_prep)
+function testing_Cortical_Data_as_RNN(region_name,figW,plot_supp_figs)
 
 animal={'Cousteau','Drake'}; % 'E' or 'F'
 dists=[0.5 1 2 4 7];
@@ -11,16 +11,26 @@ column = 3;
 
 Mean_over_time=nan(1,Nanimals);
 Mean_dist_An=nan(6000,Ndists,Nanimals);
-%Init_cond_t_all=nan(8,Ndists);
-if plot_supp
-    fig_dpca = figure;
+Init_cond_t_all=nan(8,Ndists);
+
+if plot_supp_figs.do_plot == 1
+    if strcmp(region_name,'M1')
+        prep_fig = plot_supp_figs.Prep_M1;
+        dpca_fig = plot_supp_figs.dPCA_M1;
+    else
+        prep_fig = plot_supp_figs.Prep_SMA;
+        dpca_fig = plot_supp_figs.dPCA_SMA;
+    end
+else 
+    prep_fig = [];
+    dpca_fig = [];
 end
 
 for i_animal=1:Nanimals
 
     load(['.\Output_files\scores_' animal{i_animal} '_'  region_name '.mat'],'FR','scores','idx_dir','idx_pos','idx_dist','exec','idx_Ncycle')
 
-    if plot_supp
+    if plot_supp_figs.do_plot == 1
         if (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'SMA'))
             plot_this_animal = 1;
         else
@@ -29,9 +39,16 @@ for i_animal=1:Nanimals
     else
         plot_this_animal = 0;
     end
-
-    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column,fig_supp_prep);
-    %Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
+    %% plot correct example
+    if strcmp(region_name,'SMA') && strcmp(animal{i_animal},'Cousteau')
+        figure(figW)
+        plot_init = 1;
+        subplot(4,4,8+column)
+    else
+        plot_init = 0;
+    end
+    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column,plot_init,prep_fig);
+    Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
 
 
     figure(figW)
@@ -66,15 +83,18 @@ for i_animal=1:Nanimals
     [~,prepdata]=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle);
 
     %% dPCA
-    if plot_supp
+    do_plot = 0;
+    if plot_supp_figs.do_plot == 1
         if (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'SMA'))
             do_plot = 1;
+            figure(dpca_fig)
         else
             do_plot = 0;
         end
+    end
+    [~,Per_prep]=dPCA_across_conditions(prepdata.FR,prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot,column);
 
-        figure(fig_dpca)
-        [~,Per_prep]=dPCA_across_conditions(prepdata.FR,prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot,column);
+    if plot_supp_figs.do_plot == 1
 
         subplot(5,3,column*5)
         hold on
@@ -118,8 +138,10 @@ if strcmp(region_name,'M1')
         plot(t2,mean(Mean_dist_An(:,i_dist),3),'Color',colour_dist(i_dist,:))
     end
 
-    % subplot(Nplots,Nplots,Nplots*3)
-    % errorbar(dists,mean(Init_cond_t),std(Init_cond_t),'k')
+else
+    subplot(Nplots,Nplots,12)
+    hold on
+    errorbar(mean(Init_cond_t_all,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t_all,'omitnan'),'.-k','horizontal')
 
 end
 

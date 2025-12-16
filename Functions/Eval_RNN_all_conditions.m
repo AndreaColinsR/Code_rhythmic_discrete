@@ -1,4 +1,4 @@
-function [scores_all,trials_idx,R2,states,Output_edit,Output_RNN,r_end]=Eval_RNN_all_conditions(Input,Output,InputTest,OutputTest,NetParams,exec,idx_trial_train,idx_trial_test,do_plot_output)
+function [scores_all,trials_idx,R2,states,Output_edit,Output_RNN]=Eval_RNN_all_conditions(Input,Output,InputTest,OutputTest,NetParams,exec,idx_trial_train,idx_trial_test,do_plot_output)
 %% aim: this function evaluates the network using the inputs that were used to trained it and extra inputs to test how well extrapolates to other problems
 
 idx_all_trials=[idx_trial_train;idx_trial_test];
@@ -26,9 +26,6 @@ states=[states_train;states_test];
 
 
 [~,scores_all]=pca(states);
-
-
-r_end=test_end_time(Input,scores_all,trials_idx);
 
 R2=[R2 R2_test];
 %%%%% plot?
@@ -116,38 +113,5 @@ for itrial=1:Ntrials
         end
 end
 end
-
-end
-
-function mean_r=test_end_time(Input,scores_all,trials_idx)
-r=nan(20,1);
-
-N_in=3;
-
-for i=1:20
-  
-if sum(Input(:,i,N_in))==0
-   if any(diff(Input(:,i,6))<0 & diff(Input(:,i,6))>-1)
-       N_in=6;
-   else
-       N_in=7;
-   end
-end
-
-t_end=find(Input(:,i,N_in)>0,1,'last');
-X=scores_all(trials_idx==i,1:10);
-
-[Nt,~]=size(X);
-I_end=zeros(Nt,1);
-
-I_end(t_end-30:t_end)=1;
-
-beta = mvregress(X,I_end);
-
-Y=X*beta;
-r(i)=corr(Y,I_end);
-end
-
-mean_r=mean(r);
 
 end

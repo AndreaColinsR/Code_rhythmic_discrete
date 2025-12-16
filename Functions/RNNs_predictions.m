@@ -1,4 +1,4 @@
-function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_dir,idx_pos,idx_cycle,exec,idx_Ncycle,do_plot_pred,column,fig_supp)
+function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_dir,idx_pos,idx_cycle,exec,idx_Ncycle,do_plot_pred,column,plot_init,fig_supp)
 %% 
 % Angle_dir angle between rotational planes of discrete and rhythmic
 % movements
@@ -20,7 +20,8 @@ states=states./repmat(range(states)+5,size(states,1),1);
 % computing the 3 outputs
 Angle_disc_rhythm=Angle_planes_disc_rhythm(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,do_plot);
 Dist2Att=distance_to_attractor(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,do_plot);
-Init_cond_t=initial_cond_helix(states,idx_dir,idx_pos,idx_cycle,idx_Ncycle,exec,do_plot);
+
+Init_cond_t = initial_cond_helix(states,idx_dir,idx_pos,idx_cycle,idx_Ncycle,exec,plot_init);
 
 colour_dir=[[115, 80, 185];[87, 204, 153]]./255;%[[194 165 207];[166 219 160]]./255;
 colour_ndist=plasma(Ncycle);
@@ -44,6 +45,7 @@ for i_pos=1:Npos
         FRicycle_prep_all=[];
 
         for i_cycle=1:Ncycle
+
             this_cond=find(idx_dir==i_dir & idx_pos==i_pos & idx_cycle==NumberCyles(i_cycle));
             this_prep=1:find(exec(this_cond)==1,1,'first');
 
