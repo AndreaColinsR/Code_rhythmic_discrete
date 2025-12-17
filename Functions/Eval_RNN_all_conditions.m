@@ -28,17 +28,11 @@ states=[states_train;states_test];
 [~,scores_all]=pca(states);
 
 R2=[R2 R2_test];
-%%%%% plot?
-%do_plot_output=1;
 
 if do_plot_output
+
 t=(1:Ntimes)*10-1000;
-figure
 colour_trial=plasma(Ncycles);
-colour_init_pos=jet(5);
-colour_dir=[1 0 0;0 0 0];
-
-
 
 for itrial=1:Ntrials
     
@@ -51,9 +45,7 @@ for itrial=1:Ntrials
         i_dir=round(idx_all_trials(itrial,3));
 
         Output_trial=Output_edit(thistrial,:);
-        Input_trial=squeeze(Input(:,itrial,:));
-
-        
+        Input_trial=squeeze(Input(:,itrial,:));        
         
         if i_dir==1 && i_initpos==1
         %% plot input
@@ -65,7 +57,7 @@ for itrial=1:Ntrials
         xlim([-1000 4000])
         xlabel('Time from mov onset [ms]')
         R2_trial=corr(reshape(Output_RNN(thistrial,:),npoints*Noutputs,1),Output_trial(:));
-        title(['R = ' num2str(R2_trial)])
+        title(['R = ' num2str(round(R2_trial,1))])
         %% plot output
         
         subplot(Ncycles,3,3*i_cycle-1)
@@ -83,33 +75,9 @@ for itrial=1:Ntrials
         plot(t(1:npoints),Output_RNN(thistrial,3)+0.5,'Color',colour_trial(i_cycle_sorted,:))
         plot(t(1:npoints),Output_RNN(thistrial,4),'Color',colour_trial(i_cycle_sorted,:))
         
-
         xlim([-1000 4000])
         xlabel('Time from mov onset [ms]')
 
-
-        subplot(3,3,3)
-        hold on
-        plot3(scores_all(thistrial,1),scores_all(thistrial,2),scores_all(thistrial,3),'Color',colour_trial(i_cycle_sorted,:),'LineWidth',i_initpos^2)
-        plot3(scores_all(thistrial(1),1),scores_all(thistrial(1),2),scores_all(thistrial(1),3),'o','Color',colour_trial(i_cycle_sorted,:))
-        title(['N cycle = ' num2str(idx_all_trials(itrial,1))])
-
-        subplot(3,3,6)
-        hold on
-        plot3(scores_all(thistrial,1),scores_all(thistrial,2),scores_all(thistrial,3),'Color',colour_init_pos(idx_all_trials(itrial,2),:),'LineWidth',i_initpos^2)
-        plot3(scores_all(thistrial(1),1),scores_all(thistrial(1),2),scores_all(thistrial(1),3),'o','Color',colour_init_pos(idx_all_trials(itrial,2),:))
-        title(['N cycle = ' num2str(idx_all_trials(itrial,1))])
-        if idx_all_trials(itrial,1)==0.5
-        
-        subplot(3,3,9)
-        hold on
-        %plot3(scores_all(thistrial,1),scores_all(thistrial,2),scores_all(thistrial,3),'Color',colour_dir(idx_all_trials(itrial,3),:),'LineWidth',i_initpos^2)
-        %plot3(scores_all(thistrial(150:300),1),scores_all(thistrial(150:300),2),scores_all(thistrial(150:300),3),'Color',colour_dir(idx_all_trials(itrial,3),:),'LineWidth',i_initpos^2)
-       
-        plot3(scores_all(thistrial,1),scores_all(thistrial,2),scores_all(thistrial,3),'Color',colour_dir(idx_all_trials(itrial,3),:),'LineWidth',i_initpos^2)
-        %plot3(scores_all(thistrial(1),1),scores_all(thistrial(1),2),scores_all(thistrial(1),3),'o','Color',colour_dir(idx_all_trials(itrial,3),:))
-        title(['N cycle = ' num2str(idx_all_trials(itrial,1))])
-        end
         end
 end
 end

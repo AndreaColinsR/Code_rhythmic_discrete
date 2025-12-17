@@ -1,19 +1,6 @@
-function compare_network_families(region_name,figW,plot_supp_figs)
+function compare_network_families(region_name,Mainfig,plot_supp_figs)
 
 plot_supp = plot_supp_figs.do_plot;
-
-if plot_supp_figs.do_plot == 1
-    if strcmp(region_name,'M1')
-        prep_fig = plot_supp_figs.Prep_M1;
-        dpca_fig = plot_supp_figs.dPCA_M1;
-    else
-        prep_fig = plot_supp_figs.Prep_SMA;
-        dpca_fig = plot_supp_figs.dPCA_SMA;
-    end
-else 
-    prep_fig = [];
-    dpca_fig = [];
-end
 
 hyp={'continuous','separate'};
 animal={'Cousteau','Drake'};
@@ -63,7 +50,7 @@ for i_family=1:Nfamilies
         type = 1;
     end
 
-    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp,figW,i_family,prep_fig);
+    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp_figs,Mainfig,i_family);
     idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
 
     cd(my_dir)
@@ -72,7 +59,7 @@ end
 %%%%% Plot results 
 
 
-figure(figW)
+figure(Mainfig)
 
 subplot(4,4,4)
 hold on
@@ -129,7 +116,7 @@ ylim([-0.1 1])
 
 
 %% supplementary figures
-if plot_supp
+if plot_supp 
     subplot(5,4,20)
     hold on
     plot(0, results.Angle_exec,'.k')
@@ -200,15 +187,15 @@ end
 
 if plot_supp && strcmp(region_name,'SMA')
 
-    subplot(4,4,12)
-    hold on
-    errorbar(mean(results.Init_cond,'omitnan'),[0.5 1 2 4 7],std(results.Init_cond,'omitnan'),'.-k','horizontal')
-    %errorbar([0.5 1 2 4 7],mean(results.Init_cond,'omitnan'),std(results.Init_cond,'omitnan'),'.-k')
-    xlim([0 1])
-    yticks([0.5 1 2 4 7])
-    ylabel('Number of cycles')
-    xlabel('Position trajectory at mov onset')
-    xlim([-0.1 1])
+    % subplot(4,4,12)
+    % hold on
+    % errorbar(mean(results.Init_cond,'omitnan'),[0.5 1 2 4 7],std(results.Init_cond,'omitnan'),'.-k','horizontal')
+    % %errorbar([0.5 1 2 4 7],mean(results.Init_cond,'omitnan'),std(results.Init_cond,'omitnan'),'.-k')
+    % xlim([0 1])
+    % yticks([0.5 1 2 4 7])
+    % ylabel('Number of cycles')
+    % xlabel('Position trajectory at mov onset')
+    % xlim([-0.1 1])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Control 

@@ -118,17 +118,30 @@ ylim([-0.1 1.2])
 if plot_supp
 
 
-    %% angle between rotations in discrete and rhythmic (Supp!!)
-    subplot(5,4,20)
+    %% Angle between rotations in discrete and rhythmic
+    if strcmp(region_name,'M1')
+    figure(plot_supp_figs.LDS)
+    subplot(2,4,8)
     hold on
     plot_fancy_errorbars(ifamily,Angle_disc_rhyth(:),colour_animal(1,:))
 
+    end
+    
+
+
     % var explained all pars
-    subplot(4,4,2)
+    if strcmp(region_name,'M1')
+        figure(plot_supp_figs.dPCA_M1)
+    else
+        figure(plot_supp_figs.dPCA_SMA)
+    end
+
+    subplot(5,3,12+ifamily)
     hold on
     errorbar(1:4,mean(Percentage_all_prep,'omitnan'),std(Percentage_all_prep,[],'omitnan'),'.-','Color',colour_animal(1,:))
     xticks(1:4)
     xticklabels({'N cycle','Direction','Pos','CI'})
+    figure(figW)
 end
 
 
@@ -227,7 +240,8 @@ end
 
 
 for iNet=1:Nnetworks
-    if iNet==1  && plot_supp && strcmp(animal,'Cousteau')
+    if iNet==1  && plot_supp && strcmp(animal,'Cousteau') && strcmp(region_name,'M1')
+        figure(plot_supp_figs.Ouputs{ifamily})
         do_plot_output=1;
     else
         do_plot_output=0;
@@ -369,13 +383,13 @@ for iNet=1:Nnetworks
 
         %do_plot_pred=1;
 
-       if  strcmp(ff(iNet).name, 'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat')
-           figure(figW)
-           subplot(4,4,8+plot_column)
-           plot_init = 1;
-       else
-           plot_init = 0;
-       end
+        if  strcmp(ff(iNet).name, 'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat')
+            figure(figW)
+            subplot(4,4,8+plot_column)
+            plot_init = 1;
+        else
+            plot_init = 0;
+        end
 
         [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred,plot_column,plot_init,prep_fig);
         start=start+4;
@@ -398,17 +412,15 @@ for iNet=1:Nnetworks
     clear Bend
 end
 
-Animal=isempty(strfind(ff(1).name,'Cousteau'));
 
 SuccesfulNets=sum(R2(:,2)>=0.8);
 disp(['Succesfully trained networks = ' num2str(SuccesfulNets) ' of ' num2str(Nnetworks)])
 
 
-
-if strcmp(region_name,'M1') && plot_supp
+if strcmp(region_name,'M1') && plot_supp && strcmp(animal,'Cousteau')
     %% PLot LDS results
     figure(plot_supp_figs.LDS)
-    subplot(5,2,ifamily*2-1+Animal)
+    subplot(2,3,plot_column)
     title(animal)
     epochs2=epochs_all;
     epochs2(epochs_all==0)=nan;
@@ -417,7 +429,6 @@ if strcmp(region_name,'M1') && plot_supp
     tstart=-100*ms;
     Ncond=20;
     max_l=round(max(t_end)*ms);
-    %epochs2(epochs_all==0)=0;
     imagesc([tstart max_l],[1 Ncond],median(epochs2(1:(max_l-tstart)/ms,:,:),3,'omitnan')')
     hold on
     plot([0 0],[0 Ncond],'Color',[0 0 0],'LineWidth',2)

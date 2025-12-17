@@ -95,7 +95,7 @@ for i_animal=1:Nanimals
     [~,Per_prep]=dPCA_across_conditions(prepdata.FR,prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot,column);
 
     if plot_supp_figs.do_plot == 1
-
+        figure(dpca_fig)
         subplot(5,3,column*5)
         hold on
         plot(1:4+(i_animal-1)*0.2,Per_prep,'.-b')
@@ -144,5 +144,11 @@ else
     errorbar(mean(Init_cond_t_all,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t_all,'omitnan'),'.-k','horizontal')
 
 end
+
+%% LDS
+if strcmp(region_name,'M1') && plot_supp_figs.do_plot == 1
+    figure(plot_supp_figs.LDS)
+    subplot(2,3,column)
+    Main_LDS_Russo('Cousteau',1)
 
 end

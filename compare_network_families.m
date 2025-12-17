@@ -116,16 +116,20 @@ ylim([-0.1 1])
 
 
 %% supplementary figures
-if plot_supp
-    subplot(5,4,20)
+if plot_supp && strcmp(region_name,'M1')
+    figure(plot_supp_figs.LDS)
+    subplot(2,4,8)
     hold on
     plot(0, results.Angle_exec,'.k')
+    plot([0 4],[90 90],'Color',[0.5 0.5 0.5])
     xlim([-.5 2.5])
     ylim([-10 120])
     ylabel('Angle rot discrete vs rot')
     xticks(0:4)
     xticklabels({region_name,'Same-control','Different-control'})
     box off
+
+    figure(Mainfig)
 end
 
 if strcmp(region_name,'M1')
@@ -210,7 +214,6 @@ if plot_supp && strcmp(region_name,'SMA')
     %      '.\Code\Training_RNNs\Trained_Hyp_Separate\M1_long_input_control2'};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
-toc
 end
 
 function results=get_neural_trajectories_info(region_name,output_region,animal)

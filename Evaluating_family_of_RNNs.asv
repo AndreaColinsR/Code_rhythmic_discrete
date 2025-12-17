@@ -118,17 +118,30 @@ ylim([-0.1 1.2])
 if plot_supp
 
 
-    %% angle between rotations in discrete and rhythmic (Supp!!)
-    subplot(5,4,20)
+    %% Angle between rotations in discrete and rhythmic
+    if strcmp(region_name,'M1')
+    figure(plot_supp_figs.LDS)
+    subplot(2,4,8)
     hold on
     plot_fancy_errorbars(ifamily,Angle_disc_rhyth(:),colour_animal(1,:))
+    
+    end
+    
+
 
     % var explained all pars
-    subplot(4,4,2)
+    if strcmp(region_name,'M1')
+        figure(plot_supp_figs.dPCA_M1)
+    else
+        figure(plot_supp_figs.dPCA_SMA)
+    end
+
+    subplot(5,3,12+ifamily)
     hold on
     errorbar(1:4,mean(Percentage_all_prep,'omitnan'),std(Percentage_all_prep,[],'omitnan'),'.-','Color',colour_animal(1,:))
     xticks(1:4)
     xticklabels({'N cycle','Direction','Pos','CI'})
+    figure(figW)
 end
 
 
@@ -137,8 +150,12 @@ if strcmp(region_name,'SMA')
     %% SMA plots
     subplot(4,4,12)
     hold on
-    errorbar([0.5 1 2 4 7],mean(Init_cond_t,'omitnan'),std(Init_cond_t,'omitnan'),'.-','Color',colour_animal(1,:))
-
+    errorbar(mean(Init_cond_t,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t,'omitnan'),'.-','Color',colour_animal(1,:))
+    xlim([0 1])
+    yticks([0.5 1 2 4 7])
+    ylabel('Number of cycles')
+    xlabel('Position trajectory at mov onset')
+    xlim([-0.1 1])
 
 else
     %% M1 plots
@@ -223,7 +240,8 @@ end
 
 
 for iNet=1:Nnetworks
-    if iNet==1  && plot_supp && strcmp(animal,'Cousteau')
+    if iNet==1  && plot_supp && strcmp(animal,'Cousteau') && strcmp(region_name,'M1')
+        figure(plot_supp_figs.Ouputs{ifamily})
         do_plot_output=1;
     else
         do_plot_output=0;
@@ -365,13 +383,13 @@ for iNet=1:Nnetworks
 
         %do_plot_pred=1;
 
-       if  strcmp(ff(iNet).name, 'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
-           figure(figW)
-           subplot(4,4,8+plot_column)
-           plot_init = 1;
-       else
-           plot_init = 0;
-       end
+        if  strcmp(ff(iNet).name, 'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat')
+            figure(figW)
+            subplot(4,4,8+plot_column)
+            plot_init = 1;
+        else
+            plot_init = 0;
+        end
 
         [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred,plot_column,plot_init,prep_fig);
         start=start+4;
@@ -401,10 +419,10 @@ disp(['Succesfully trained networks = ' num2str(SuccesfulNets) ' of ' num2str(Nn
 
 
 
-if strcmp(region_name,'M1') && plot_supp
+if strcmp(region_name,'M1') && plot_supp && Animal == 0
     %% PLot LDS results
     figure(plot_supp_figs.LDS)
-    subplot(5,2,ifamily*2-1+Animal)
+    subplot(2,3,plot_column)
     title(animal)
     epochs2=epochs_all;
     epochs2(epochs_all==0)=nan;

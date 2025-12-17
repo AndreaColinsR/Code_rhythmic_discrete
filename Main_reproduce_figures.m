@@ -36,12 +36,12 @@ mkdir Output_files
 
 
 %%% Plot supplementary figures?
-plot_supp_figs.do_plot = 0; 
+plot_supp_figs.do_plot = 1; 
 
 if plot_supp_figs.do_plot == 1
     % if plotting supplemetary figures, then create all the necessary
     % figures
-    plot_supp_figs.Ouputs = figure;
+    plot_supp_figs.Ouputs = {figure,figure};
     plot_supp_figs.LDS = figure;
     plot_supp_figs.Prep_M1 = figure;
     plot_supp_figs.dPCA_M1 = figure;
@@ -64,8 +64,8 @@ animal = 'Drake';
 region_name='M1';
 figM1=figure;
 %% Analyse neural recordings 
-%testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
-%compare_network_families(region_name,figM1,plot_supp_figs)
+testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
+compare_network_families(region_name,figM1,plot_supp_figs)
 
 
 %% Video: 
