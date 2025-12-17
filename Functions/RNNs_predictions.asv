@@ -35,7 +35,7 @@ if do_plot_pred
 
     figure(fig_supp)
     [Ntimes,Nunits] = size(states);
-    counter = 1;
+
 
     idxCycle_prep=nan(Ntimes,1);
     idxDir_prep=nan(Ntimes,1);
@@ -52,15 +52,12 @@ if do_plot_pred
                 this_prep=1:find(exec(this_cond)==1,1,'first');
 
                 FRicycle=states(this_cond(this_prep),:);
-
                 Nrows = numel(this_cond(this_prep));
+                idxCycle_prep=[idxCycle_prep;ones(,1)*i_cycle];
+                idxDir_prep=[idxDir_prep;ones(numel(this_cond(this_prep)),1)*i_dir];
+                idxPos_prep=[idxPos_prep;ones(numel(this_cond(this_prep)),1)*i_pos];
+                FRicycle_prep_all=[FRicycle_prep_all;FRicycle];
 
-                idxCycle_prep(counter:counter+Nrows-1,:)=ones(Nrows,1)*i_cycle;
-                idxDir_prep(counter:counter+Nrows-1,:)=ones(Nrows,1)*i_dir;
-                idxPos_prep(counter:counter+Nrows-1,:)=ones(Nrows,1)*i_pos;
-                FRicycle_prep_all(counter:counter+Nrows-1,:)=FRicycle;
-
-                counter=counter+Nrows;
             end
 
 

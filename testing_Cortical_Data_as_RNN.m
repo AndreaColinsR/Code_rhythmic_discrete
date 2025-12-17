@@ -39,7 +39,7 @@ for i_animal=1:Nanimals
     else
         plot_this_animal = 0;
     end
-    %% plot correct example
+    %% plot correct example initial conditions
     if strcmp(region_name,'SMA') && strcmp(animal{i_animal},'Cousteau')
         figure(figW)
         plot_init = 1;
@@ -47,7 +47,14 @@ for i_animal=1:Nanimals
     else
         plot_init = 0;
     end
-    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column,plot_init,prep_fig);
+    
+    if strcmp(region_name,'M1') && strcmp(animal{i_animal},'Cousteau')
+        plot_LDS =1;
+    else
+        plot_LDS = 0;
+    end
+
+    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column,plot_init,prep_fig,plot_LDS,plot_supp_figs.LDS);
     Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
 
 
@@ -149,6 +156,6 @@ end
 if strcmp(region_name,'M1') && plot_supp_figs.do_plot == 1
     figure(plot_supp_figs.LDS)
     subplot(2,3,column)
-    Main_LDS_Russo('Cousteau',1)
+    Main_LDS_Cortical('Cousteau',1)
 
 end

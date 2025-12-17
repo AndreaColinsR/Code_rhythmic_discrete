@@ -1,4 +1,4 @@
-function [corr_CC,Angle_rotRNN,OutW,MinDist,Dist_prep_onset]=Evaluating_family_of_RNNs(hyp,region_name,my_dir,plot_supp_figs,varargin)
+function [corr_CC,Angle_rotRNN,MinDist,Dist_prep_onset]=Evaluating_family_of_RNNs(hyp,region_name,my_dir,plot_supp_figs,varargin)
 
 if nargin==6
     ifamily=varargin{2};
@@ -22,7 +22,6 @@ Nanimal=numel(animal);
 SuccesfulNets=zeros(Nanimal,1);
 corr_CC=nan(Nnets*Nanimal,7);
 R2=nan(Nnets*Nanimal,2);
-Mean_OutW = nan(Nnets,2);
 Angle_rot = nan(Nnets,2);
 Angle_disc_rhyth = nan(Nnets,2);
 MinDist=nan(Nnets*Nanimal,2);
@@ -58,7 +57,6 @@ for i_animal=1:Nanimal
     SuccesfulNets(i_animal)=Results.SuccesfulNets;
     corr_CC((i_animal-1)*Nnets+1:i_animal*Nnets,:)=Results.corr_CC;
     Percentage_all_prep((i_animal-1)*Nnets+1:i_animal*Nnets,:)=Results.Percentage_all_prep;
-    Mean_OutW(:,i_animal)=Results.Mean_OutW;
     Init_cond_t((i_animal-1)*Nnets*4+1:i_animal*Nnets*4,:)=Results.Init_cond_t;
     Dist2Att_all(1:size(Results.Dist2Att_all,1),(i_animal-1)*Nnets+1:i_animal*Nnets,:)=Results.Dist2Att_all;
     Dist_all_prep(:,:,(i_animal-1)*Nnets+1:i_animal*Nnets)=Results.Dist_all_prep;
@@ -67,7 +65,7 @@ for i_animal=1:Nanimal
 end
 
 Angle_rotRNN=Angle_rot(:);
-OutW=Mean_OutW(:);
+
 figure(figW)
 
 %% CCA Output RNN vs Output cortical region (e.g EMG vs output of RNN corresponding to M1)
@@ -190,19 +188,15 @@ figure(figW)
 if strcmp(hyp,'separate')
     load(['.\..\..\RNNs_Inputs\M1_' animal '_different.mat'],'exec','idx_current_cycle')
     training=[0,1,2,3,16,17,18,19]+1;
-    test=5:16;
+    test = 5:16 ;
     plot_column  = 2;
 
 else
     load(['.\..\..\RNNs_Inputs\M1_' animal '_same.mat'],'exec','idx_current_cycle')
-    training=13:20;
-    test=1:12;
-
+    training = 13:20;
+    test = 1:12;
     plot_column = 1;
 
-    % for inverse case
-    %training=1:12;
-    %test=13:20;
 end
 
 
@@ -222,6 +216,7 @@ Angle_rot=nan(Nnetworks,1);
 Angle_disc_rhyth=nan(Nnetworks,1);
 Init_cond_t=nan(Nnetworks*4,5);
 Dist2Att_all=nan(Nel,20,numel(dists));
+%epochs_all=nan(1433,20,Nnetworks);
 
 plot_supp = plot_supp_figs.do_plot;
 
@@ -247,46 +242,16 @@ for iNet=1:Nnetworks
         do_plot_output=0;
     end
 
-    ff(iNet).name
-
-    load(ff(iNet).name,'inputs','B','W','O','Ob','Output','Test_input','Test_Outputs','idx_cycles_train','idx_pos_train','idx_cycles_test','idx_pos_test','Bipos','Bdir','Btask','Bend','Initial_state','idx_dir_test','idx_dir_train')
-    Input = permute(inputs,[2 1 3]);
-    Output = permute(Output,[2 1 3]);
-    Test_input = permute(Test_input,[2 1 3]);
-    Test_Outputs = permute(Test_Outputs,[2 1 3]);
-
-    idx_pos_test=double(idx_pos_test);
-    idx_dir_test=double(idx_dir_test);
-    idx_pos_train=double(idx_pos_train);
-    idx_dir_train=double(idx_dir_train);
-
-    if exist('Btask','var')
-        if ~exist('Bend','var')
-            %Bend=[B;B];
-            net_params.B=[Bipos',B',Bdir',Btask'];
-        else
-            net_params.B=[Bipos',Bend',Bdir',Btask'];
-        end
-    else
-        net_params.B=[Bipos',B',Bdir'];
-    end
-    net_params.S0=Initial_state';
-    net_params.W=W;
-    net_params.O=O;
-    net_params.Ob=Ob;
-
-    Mean_OutW(iNet)=norm(O);
-    idx_conditions_train=[idx_cycles_train,idx_pos_train,idx_dir_train];
-    idx_conditions_test=[idx_cycles_test,idx_pos_test,idx_dir_test];
-    idx_conds_all=[idx_conditions_train;idx_conditions_test];
-
-    [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN] = Eval_RNN_all_conditions(Input,Output,Test_input,Test_Outputs,net_params,exec,idx_conditions_train,idx_conditions_test,do_plot_output);
+    % load information of the trained RNN 
+    info = load_RNN_info(ff(iNet).name);
+    % Evaluate the trained RNN
+    [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,do_plot_output);
 
 
     % post process only if succesful
     if R2(iNet,2)>=0.8
 
-        [idx_dir,idx_pos,idx_Ncycle,idx_dist,~,exec2]=find_idx_conds(trials_idx,idx_conds_all,idx_current_cycle);
+        [idx_dir,idx_pos,idx_Ncycle,idx_dist,~,exec2]=find_idx_conds(trials_idx,info.idx_conds_all,idx_current_cycle);
 
         %% LDS
         if strcmp(region_name,'M1') && plot_supp
@@ -297,11 +262,11 @@ for iNet=1:Nnetworks
 
         %% Between EMGs train
         idx_all_cond=[idx_dir,idx_pos,idx_dist];
-        idx_train=ismember(idx_dist,unique(idx_cycles_train));
+        idx_train=ismember(idx_dist,unique(info.idx_cycles_train));
         r_EMG_train=CCA_RNN_M1(Output_RNN(idx_train,:),idx_all_cond(idx_train,:),Output_edited(idx_train,:),idx_all_cond(idx_train,:));
 
         %% Between EMG test
-        idx_test=ismember(idx_dist,unique(idx_cycles_test));
+        idx_test=ismember(idx_dist,unique(info.idx_cycles_test));
         r_EMG_test=CCA_RNN_M1(Output_RNN(idx_test,:),idx_all_cond(idx_test,:),Output_edited(idx_test,:),idx_all_cond(idx_test,:));
 
         CC_EMG(iNet,:)=[mean(r_EMG_train),mean(r_EMG_test)];
@@ -309,19 +274,18 @@ for iNet=1:Nnetworks
 
         %% control to show that a random model (shuffled RNN PCs) is not
         % well correlated
-        r_control=CCA_RNN_M1(scores(:,randperm(size(W,1))),idx_all_cond,scores_M1,cond_idx_M1);
+        r_control=CCA_RNN_M1(scores(:,randperm(size(states,2))),idx_all_cond,scores_M1,cond_idx_M1);
         corr_CC_control(iNet)=mean(r_control);
 
         %r=CCA_RNN_M1(scores,idx_all_cond,scores_M1,cond_idx_M1);
         %% only for test trials
-        idx_test_M1=ismember(cond_idx_M1(:,3),unique(idx_cycles_test));
+        idx_test_M1=ismember(cond_idx_M1(:,3),unique(info.idx_cycles_test));
         r=CCA_RNN_M1(scores(idx_test,:),idx_all_cond(idx_test,:),scores_M1(idx_test_M1,:),cond_idx_M1(idx_test_M1,:));
         corr_CC(iNet)=mean(r);
 
         %% prepare for dPCA
         % dPCA Prep
         [~,prepdata,~]=get_prep_exec_after_FR(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
-        %plot_by_dir_and_cycle(endexecdata.scores,endexecdata.ndir,endexecdata.npos,endexecdata.ndist,true)
 
         figure(figW)
         %% Euclidean distance between trajectories
@@ -333,23 +297,8 @@ for iNet=1:Nnetworks
             states2=states2./repmat(range(states2)+5,size(states,1),1);
             [~,PC_this_example]=pca(states2);
             PC_this_example=PC_this_example-PC_this_example(1,:);
-            figure(figW)
-            % pos1 = [0.0977 0.5378 0.1212 0.2284];
-            % pos2 = [0.2476 0.6666 0.0529 0.0977];
-            % pos3 = [0.2448 0.5523 0.0604 0.0956];
 
-            % if ifamily==1
-            %     ax=[axes('Position',pos1)...
-            %         axes('Position',pos2)...
-            %         axes('Position',pos3)];
-            % else
-            %     pos1(1)=pos1(1)+0.3;
-            %     pos2(1)=pos2(1)+0.3;
-            %     pos3(1)=pos3(1)+0.3;
-            %     ax=[axes('Position',pos1)...
-            %         axes('Position',pos2)...
-            %         axes('Position',pos3)];
-            % end
+            figure(figW)
 
             subplot(4,4,4+plot_column)
             dt = 10;
@@ -365,12 +314,9 @@ for iNet=1:Nnetworks
             end
             view(64.5239,15.9280)
 
-            Inputs_all=[Input,Test_input];
+            Inputs_all=[info.Input,info.Test_input];
             save(['.\..\..\..\Output_files\Scores_' ff(iNet).name],'PC_this_example','idx_dir','idx_pos','idx_dist','idx_Ncycle','trials_idx','Inputs_all')
 
-            % different hyp
-            %     view(-116.1139,40.3981)
-            %     ax=gca;
             if plot_supp
                 do_plot_pred=1;
             else
@@ -390,8 +336,16 @@ for iNet=1:Nnetworks
         else
             plot_init = 0;
         end
+        
 
-        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred,plot_column,plot_init,prep_fig);
+        if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousCousteau_5_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateCousteau_1_Orth_start.mat'))
+            plot_LDS = 1;
+        else
+            plot_LDS = 0;
+        end
+
+        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred,plot_column,plot_init,prep_fig,plot_LDS,plot_supp_figs.LDS);
+
         start=start+4;
 
         if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousDrake_12_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat'))
@@ -458,62 +412,7 @@ Results.Angle_disc_rhyth=Angle_disc_rhyth;
 Results.SuccesfulNets=SuccesfulNets;
 Results.corr_CC=corr_CC;
 Results.Percentage_all_prep=Percentage_all_prep;
-Results.Mean_OutW=Mean_OutW;
 Results.Init_cond_t=Init_cond_t;
 Results.Dist2Att_all=Dist2Att_all;
 end
 
-function [idx_dir,idx_pos,idx_Ncycle,idx_dist,prep,exec,startexec,endexec]=find_idx_conds(trials_idx,idx_conds,idx_current_cycle)
-
-Nconds=max(trials_idx);
-ntimepoints=size(trials_idx,1);
-idx_dir=zeros(ntimepoints,1);
-idx_dist=zeros(ntimepoints,1);
-idx_pos=zeros(ntimepoints,1);
-idx_Ncycle=nan(ntimepoints,1);
-exec=ones(ntimepoints,1);
-prep=ones(ntimepoints,1);
-endexec=ones(ntimepoints,1);
-startexec=zeros(ntimepoints,1);
-%NumberCyles=unique(idx_conds(:,1));
-
-
-
-for i_cond=1:Nconds
-    this_cond=find(trials_idx==i_cond);
-
-    idx_Ncycle(this_cond)=idx_current_cycle(i_cond,1:numel(this_cond));
-    idx_pos(this_cond)=idx_conds(i_cond,2);
-    idx_dir(this_cond)=idx_conds(i_cond,3);
-
-    exec(this_cond(1:100))=0;
-    exec(this_cond(end-40:end))=0;
-    % prep idx
-    prep(this_cond(101:end))=0;
-
-
-    idx_mov_end=find(~isnan(idx_current_cycle(i_cond,:)),1,'last');
-
-    if idx_conds(i_cond,1)<1
-
-        end_first_half=idx_mov_end;
-
-    elseif idx_conds(i_cond,1)==1
-        firstcycledur=idx_mov_end-100;
-        end_first_half=100+round(firstcycledur/2);
-    else
-        firstcycledur=find(idx_current_cycle(i_cond,100:end)>1,1,"first");
-        end_first_half=100+round(firstcycledur/2);
-
-    end
-    startexec(this_cond(100:end_first_half))=1;
-
-    % last half cycle
-    endexec(this_cond(1:end-100))=0;
-    endexec(this_cond(end-40:end))=0;
-
-    %idx_dist(this_cond)=find(idx_conds(i_cond,1)==NumberCyles);
-    idx_dist(this_cond)=idx_conds(i_cond,1);
-end
-
-end

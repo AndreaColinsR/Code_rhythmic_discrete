@@ -1,4 +1,4 @@
-function Main_LDS_Russo(animal,do_plot)
+function Main_LDS_Cortical(animal,do_plot)
 
 %% Calculate the eigenvalues of the piecewise LDS during execution (in the segment defined by Ames)
 timesmov=[-1000 400]; %Ames used 1250:3250 => cycles 2 to 5

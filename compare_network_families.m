@@ -15,7 +15,7 @@ if strcmp(region_name,'M1')
     output_region='EMG';
 
 elseif strcmp(region_name,'SMA')
-    folders = {'.\Output_files\TrainedRNNs\SMA_same'
+     folders = {'.\Output_files\TrainedRNNs\SMA_same'
         '.\Output_files\TrainedRNNs\SMA_different'};
 
     output_region='M1';
@@ -34,7 +34,6 @@ Nnets = 40; %% total number of RNNs (NNnets*2 animals)
 corr_CC = nan(Nnets*Nfamilies,4);
 idx_family=corr_CC;
 Angle_rotRNN=nan(NNets*2,Nfamilies);
-OutW=nan(NNets*2,Nfamilies);
 MinDist=nan(NNets*2,2,Nfamilies);
 Dist_prep_onset=nan(NNets*2,Nfamilies);
 
@@ -50,7 +49,7 @@ for i_family=1:Nfamilies
         type = 1;
     end
 
-    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),OutW(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp_figs,Mainfig,i_family);
+    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp_figs,Mainfig,i_family);
     idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
 
     cd(my_dir)
@@ -187,32 +186,6 @@ if strcmp(region_name,'M1')
     plot([-1000 4000],[mean(results.Mean_over_time) mean(results.Mean_over_time)],'Color',[0.5 0.5 0.5])
 
 
-end
-
-if plot_supp && strcmp(region_name,'SMA')
-
-    % subplot(4,4,12)
-    % hold on
-    % errorbar(mean(results.Init_cond,'omitnan'),[0.5 1 2 4 7],std(results.Init_cond,'omitnan'),'.-k','horizontal')
-    % %errorbar([0.5 1 2 4 7],mean(results.Init_cond,'omitnan'),std(results.Init_cond,'omitnan'),'.-k')
-    % xlim([0 1])
-    % yticks([0.5 1 2 4 7])
-    % ylabel('Number of cycles')
-    % xlabel('Position trajectory at mov onset')
-    % xlim([-0.1 1])
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Control 
-    %% test with SMA input trained to replicate EMG
-    % folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\SMA_EMG'
-    %     '.\Code\Training_RNNs\Trained_Hyp_Separate\SMA_EMG'};
-    %
-    % output_region='EMG';
-
-    %% Control same-control without decreasing input, just a start (dir and pos) and a stop signal
-    %   folders = {'.\Code\Training_RNNs\Trained_Hyp_continuous\M1_long_input_control'
-    %      '.\Code\Training_RNNs\Trained_Hyp_Separate\M1_long_input_control2'};
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 end
 

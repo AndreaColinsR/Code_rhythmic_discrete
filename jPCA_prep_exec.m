@@ -14,9 +14,9 @@ jPCA_params.suppressText=true;
 jPCA_params.softenNorm=5;
 jPCA_params.normalize=false;
 
-
-%total_time=length(idx);
-
+template_struct.A = [];
+template_struct.times = [];
+Data = repmat(template_struct, 1,Ndir*Npos);
 
 i_cond=1;
 for i_pos=1:Npos
@@ -27,22 +27,11 @@ for i_pos=1:Npos
         i_cond=i_cond+1;
     end
 end
-%Ncond=i_cond-1;
 
-[scorestruct,summary] = jPCA(Data,selected_times, jPCA_params);
+
+[scorestruct,summary] = jPCA_new_version(Data,selected_times, jPCA_params);
 [summary.varCaptEachJPC,idxtmp]=sort(summary.varCaptEachJPC,'descend');
 summary.jPCs=summary.jPCs(:,idxtmp);
 summary.jPCs_highD=summary.jPCs_highD(:,idxtmp);
-% figure
-% hold on
-% for i_cond=1:Ncond
-% jpcs=scorestruct(i_cond).tradPCAproj(:,1:Ndim);
-% 
-% plot3(jpcs(:,1),jpcs(:,2),jpcs(:,3))
-% 
-% plot3(jpcs(1,1),jpcs(1,2),jpcs(1,3),'o')
-% end
 
-
-%tmpdim=find(cumsum(summary.varCaptEachJPC)>=(varExpTh/100),1,'First');
 end

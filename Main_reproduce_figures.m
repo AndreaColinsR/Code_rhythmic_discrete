@@ -15,28 +15,26 @@ function Main_reproduce_figures
 % dataset_path = 'C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
 %% home
-
+tic
  jPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
  dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
 % 
 dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
-
-plot_supp = 0; % 1 to plot supplementary figures, 0 otherwise
 addpath('.\Functions')
 
 %% add necessary toolboxes - not necessary for code review
 addpath(genpath(jPCA_path))
 addpath(genpath(dPCA_path))
 
-
+% Plot supplementary figures?
+plot_supp_figs.do_plot = 1; % 1 = Yes, 0 = No.
 
 %% 0. Define PCA trajectories and save results in Output_files folder
 mkdir Output_files
 %create_all_output_files(dataset_path)
 
 
-%%% Plot supplementary figures?
-plot_supp_figs.do_plot = 1; 
+
 
 if plot_supp_figs.do_plot == 1
     % if plotting supplemetary figures, then create all the necessary
@@ -88,4 +86,12 @@ RNN_name_diff = 'Scores_Trained_M1_Hyp_separateCousteau_10_Orth_start';
 i_dir = 2;
 i_pos = 1;
 %play_video_rhythmic_discrete(region_name,animal,RNN_name_same,RNN_name_diff,i_dir,i_pos)
+
+
+%% Supplementary figure different inputs 
+if plot_supp_figs.do_plot == 1
+    figure(plot_supp_figs.TC)
+    Supplementary_temporal_context
+end
+toc
 end
