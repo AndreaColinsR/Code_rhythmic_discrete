@@ -4,34 +4,39 @@ function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_
 % movements
 % Dist2Att is the distance to the limit cycle attractor
 
+% soft normalise states
+states=states-mean(states);
+states=states./repmat(range(states)+5,size(states,1),1);
+
+%% computing the 3 outputs:
+% 1. Distance to limit cycle of rhythmic movements (for M1)
+Dist2Att = distance_to_attractor(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos);
+
+% 2. Position of the neural state at mov onset (initial condition) relative
+% to the helix (from SMA)
+Init_cond_t = initial_cond_helix(states,idx_dir,idx_pos,idx_cycle,idx_Ncycle,exec,plot_init);
+
+% 3. Angles between planes of rotations of neural activity during the execution of
+% and rhythmic movements (M1)
+if plot_angle
+    figure(fig_angle)
+    subplot(2,4,4+column)
+end
+
+Angle_disc_rhythm = Angle_planes_disc_rhythm(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,plot_angle);
+
+%% if plotting an example of neural activity during preparation
+
+if do_plot_pred
+
 Ndir=2;
 Npos=2;
 
 NumberCyles=unique(idx_cycle);
 Ncycle=numel(NumberCyles);
 
-% soft normalise states
-states=states-mean(states);
-states=states./repmat(range(states)+5,size(states,1),1);
-
-% computing the 3 outputs
-do_plot=0;
-
-Dist2Att=distance_to_attractor(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,do_plot);
-
-Init_cond_t = initial_cond_helix(states,idx_dir,idx_pos,idx_cycle,idx_Ncycle,exec,plot_init);
-
-if plot_angle
-    figure(fig_angle)
-    subplot(2,4,4+column)
-end
-Angle_disc_rhythm=Angle_planes_disc_rhythm(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,plot_angle);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 colour_dir=[[115, 80, 185];[87, 204, 153]]./255;%[[194 165 207];[166 219 160]]./255;
 colour_ndist=plasma(Ncycle);
-
-if do_plot_pred
 
     figure(fig_supp)
     [Ntimes,Nunits] = size(states);
@@ -97,146 +102,5 @@ if do_plot_pred
 
 end
 
-
-end
-
-
-function Angle_dir=Angle_planes_disc_rhythm(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,do_plot)
-
-Ndir=max(idx_dir);
-Npos=max(idx_pos);
-
-Angle_dir=nan(Ndir,Npos);
-
-for i_dir=1:Ndir
-    for i_pos=1:Npos
-
-        Rhythmic=idx_cycle==7 & idx_Ncycle>1 & idx_Ncycle<7 & idx_dir==i_dir & idx_pos==i_pos;
-        NelR=sum(Rhythmic);
-        times_exec=1:NelR;
-        [~,summary]=jPCA_prep_exec(states(Rhythmic,:),ones(NelR,1),ones(NelR,1),times_exec);
-
-        Discrete=idx_cycle<1 & idx_Ncycle==1 & idx_dir==i_dir & idx_pos==i_pos;
-        NelD=sum(Discrete);
-        times_exec=1:NelD;
-        [~,summary2]=jPCA_prep_exec(states(Discrete,:),ones(NelD,1),ones(NelD,1),times_exec);
-
-        Angle_dir(i_dir,i_pos)=subspace(summary.jPCs_highD(:,1:2),summary2.jPCs_highD(:,1:2))*180/pi;
-
-        if do_plot && i_dir==1 && i_pos==1
-            colour_cycle=plasma(5);
-
-
-            Discrete=idx_cycle<1 & idx_dir==i_dir & idx_pos==i_pos;
-            NelD=sum(Discrete);
-
-
-            [~,scores]=pca([states(Discrete,:);states(Rhythmic,:)]);
-            plot3(scores(1:NelD,1),scores(1:NelD,2),scores(1:NelD,3),'Color',colour_cycle(1,:))
-            hold on
-            exec_disc=find(idx_Ncycle(Discrete)>0);
-            plot3(scores(exec_disc,1),scores(exec_disc,2),scores(exec_disc,3),'Color',colour_cycle(1,:),'LineWidth',2)
-            plot3(scores(1,1),scores(1,2),scores(1,3),'ok')
-
-            plot3(scores(NelD+1:end,1),scores(NelD+1:end,2),scores(NelD+1:end,3),'Color',colour_cycle(5,:),'LineWidth',2)
-            title(['Angle = ' num2str(Angle_dir(i_dir,i_pos),'%.2f')])
-
-        end
-
-    end
-end
-
-Angle_dir=mean(Angle_dir(:));
-end
-
-function Dist2Att=distance_to_attractor(states,idx_cycle,idx_Ncycle,idx_dir,idx_pos,do_plot)
-
-Ndir=max(idx_dir);
-Npos=max(idx_pos);
-
-Ncycles=unique(idx_cycle);
-[~,scores,~,~,explained]=pca(states);
-ndims=min(find(cumsum(explained)>=80,1,'first'),6);
-
-Ntimes=sum(idx_cycle==7  & idx_dir==1 & idx_pos==1);
-Ntimes=round(Ntimes*1.1); % add 10% as buffer
-Dist2Att=nan(Ntimes,4,5); % 20 conditions
-counter=1;
-
-Av_cycle=round(Ntimes/7);
-Natural_dist=nan(Av_cycle,ndims,7);
-
-for i_dir=1:Ndir
-    for i_pos=1:Npos
-
-        Rhythmic=idx_cycle==7 & idx_Ncycle>1 & idx_Ncycle<7 & idx_dir==i_dir & idx_pos==i_pos;
-        %%
-        % Compute the natural variability of the neural activity
-        % while in the attractor
-
-        for this_cycle=2:6
-            this_idx=Rhythmic & idx_Ncycle==this_cycle;
-            Scores_this_cycle=interp1(linspace(0,1,sum(this_idx)),scores(this_idx,1:ndims),linspace(0,1,Av_cycle)');
-            %remove possible temporal delay using the delay between first
-            %PCs
-            if this_cycle>2
-                if numel(Scores_this_cycle(:,1))==1
-                    keyboard
-                end
-                [r,lag]=xcorr(Natural_dist(:,1,2),Scores_this_cycle(:,1));
-                [~,minlag]=max(r);
-                Scores_this_cycle=circshift(Scores_this_cycle,lag(minlag)-1,1);
-
-            end
-            Natural_dist(:,:,this_cycle)=Scores_this_cycle;
-        end
-
-        Mean_cycles=mean(Natural_dist(:,:,2:6),3);
-        dist_to_mean=nan(Av_cycle,5);
-
-        for this_cycle=2:6
-            dist_to_mean(:,this_cycle-1)=min(pdist2(Natural_dist(:,:,this_cycle),Mean_cycles));
-            %dist_to_mean(:,this_cycle-1)=sqrt(sum((Natural_dist(:,:,this_cycle)-Mean_cycles).^2,2));
-        end
-
-        baseline_dist=mean(dist_to_mean,'all');
-
-        for i_cycle=1:numel(Ncycles)
-
-            Discrete=idx_cycle==Ncycles(i_cycle) & idx_dir==i_dir & idx_pos==i_pos;
-            Nel=sum(Discrete);
-            Mdist=pdist2(scores(Rhythmic,1:ndims),scores(Discrete,1:ndims));
-
-
-            %             if Ncycles(i_cycle)==4
-            %                 threshold=prctile(Mdist(:),10);
-            %             end
-
-
-            Dist2Att(1:Nel,counter,i_cycle)=min(Mdist)';
-            % normalise by the distance to the origin (baseline)
-            Dist2Att(:,counter,i_cycle)=max(Dist2Att(:,counter,i_cycle)-baseline_dist,0,'includenan')./(Dist2Att(1,counter,i_cycle)-baseline_dist);
-
-            % if Dist2Att(1,counter,i_cycle)-baseline_dist<0
-            %     do_plot=1;
-            %     keyboard
-            % end
-            if do_plot
-                subplot(2,1,1)
-                hold on
-                plot(Dist2Att(:,:,i_cycle))
-
-
-                subplot(2,1,2)
-                plot3(scores(Rhythmic,1),scores(Rhythmic,2),scores(Rhythmic,3))
-                hold on
-                plot3(scores(Discrete,1),scores(Discrete,2),scores(Discrete,3))
-
-            end
-        end
-        counter=counter+1;
-    end
-
-end
 
 end
