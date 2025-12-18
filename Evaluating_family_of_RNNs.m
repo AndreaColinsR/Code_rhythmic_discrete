@@ -148,7 +148,7 @@ if strcmp(region_name,'SMA')
     %% SMA plots
     subplot(4,4,12)
     hold on
-    errorbar(mean(Init_cond_t,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t,'omitnan'),'.-','Color',colour_animal(1,:))
+    errorbar(mean(Init_cond_t,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t,'omitnan'),'.-','horizontal','Color',colour_animal(1,:))
     xlim([0 1])
     yticks([0.5 1 2 4 7])
     ylabel('Number of cycles')
@@ -178,7 +178,6 @@ dists=[0.5 1 2 4 7];
 Nel=600;
 start=1;
 ndims=4;
-Npoints=[1 10];
 
 ff=dir(['.\*' hyp '' animal '*']);
 Nnetworks=size(ff,1);
@@ -289,7 +288,7 @@ for iNet=1:Nnetworks
 
         figure(figW)
         %% Euclidean distance between trajectories
-        [~,~,~,Dist_all_prep(:,:,iNet)]=compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist,Npoints);
+        Dist_all_prep(:,:,iNet)=compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
 
         if strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_14_SLen300v2.mat') ||  strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_12_Orth_start.mat')  || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
 

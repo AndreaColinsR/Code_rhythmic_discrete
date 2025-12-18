@@ -31,7 +31,8 @@ center=nan(7,ndims);
 
 [dist_sorted,~]=sort(Ndist,'ascend');
 
-t=0:0.01:1;
+s=0:0.01:1;
+Ns=numel(s);
 
 counter=1;
 
@@ -52,16 +53,19 @@ for i_dir=1:2
 
         %% fit to bezier curve
         P(1,:)=center(1,:);
-        P(2,:)=center(6,:);
+        P(2,:)=center(6,:); % Initial guess of the middle point before the fitting.
         P(3,:)=center(end,:);
 
         P1P3=[P(1,:);P(3,:)];
         P2=P(2,:);
+
         %% order of parameters fcn = @(coefficients,problemparameters,x,y) expression
         ftmp = @(P2) eval_bezier_min(center,P2,P1P3);
-        x = fminsearch(ftmp,P2);
-        P(2,:)=x;
-        B=eval_bezier2(P,t);
+        middle_point = fminsearch(ftmp,P2);
+        P(2,:) = middle_point;
+
+        % evaluate
+        B = eval_bezier(P,s);
         
         % Plot bezier curve
         if do_plot && i_dir==2 && i_pos==2
@@ -72,13 +76,15 @@ for i_dir=1:2
         InitC=nan(NNdist,ndims);
         idx_min=nan(NNdist,1);
 
-        this_cond = idx_dir==i_dir & idx_pos==i_pos & idx_dist==7;
+        %% find the closest point to the Bezier curve
 
-        % find the closest point 
         for i_dist=1:NNdist
+
             this_cond2=find(idx_dir==i_dir & idx_pos==i_pos & idx_dist==dist_sorted(i_dist));
-            InitC(i_dist,:)=mean(scores(this_cond2(1:10*Nt),:),1); % use the first 100  ms of movement as the initial condition
-            [~,idx_min(i_dist)]=min(pdist2(scores(this_cond,:),InitC(i_dist,:)));
+
+            % compute the average position of the initial condition 
+            InitC(i_dist,:)=mean(scores(this_cond2(1:5*Nt),:),1); % use the first 100  ms of movement as the initial condition
+            [~,idx_min(i_dist)]=min(pdist2(B,InitC(i_dist,:))); % idx_min is s at which the in the Bezier curve is closest to the point
 
             if do_plot && i_dir==2 && i_pos==2
                 plot3(scores(this_cond2,1),scores(this_cond2,2),scores(this_cond2,3),'Color',colour_dist(i_dist,:))
@@ -89,21 +95,11 @@ for i_dir=1:2
 
         end
 
-        % normalization by the number of timebins of the condition
-        Init_cond_t(counter,:) = idx_min./sum(this_cond);
-
+        Init_cond_t(counter,:) = idx_min/Ns;
+        
         counter=counter+1;
     end
 end
 
-end
-
-function B=eval_bezier2(P,t_in)
-Nt=numel(t_in);
-B=nan(Nt,size(P,2));
-for ti=1:Nt
-    t=t_in(ti);
-    B(ti,:)=(1-t)*(P(1,:)+t*P(2,:))+t*((1-t)*P(2,:)+t*P(3,:));
-end
 end
 
