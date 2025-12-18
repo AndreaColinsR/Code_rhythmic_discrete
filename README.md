@@ -1,3 +1,6 @@
+
+
+
 # Description of cortical activity underyling rhythmic and discrete movements. 
 
 The following code creates the first figure of the manuscript "Rhythmic and discrete arm movements arise from 
@@ -20,3 +23,10 @@ The code creates a file for each animal and cortical area recorded and store the
 The main output of this code is the first figure of the manuscript. The figure should look like the figure below
 
 <img width="1131" height="878" alt="image" src="https://github.com/user-attachments/assets/69e8c4ad-67e2-4ba0-bea7-92a251fd2a3d" />
+
+
+  DEPENDENCIES
+  ------------
+ jPCA
+ dPCA
+ Statistics and Machine Learning Toolbox (for PCA, SUBSPACE)
