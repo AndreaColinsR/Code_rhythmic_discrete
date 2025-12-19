@@ -288,7 +288,7 @@ for iNet=1:Nnetworks
 
         figure(figW)
         %% Euclidean distance between trajectories
-        Dist_all_prep(:,:,iNet)=compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
+        Dist_all_prep(:,:,iNet) = compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
 
         if strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_14_SLen300v2.mat') ||  strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_12_Orth_start.mat')  || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
 
@@ -317,16 +317,16 @@ for iNet=1:Nnetworks
             save(['.\..\..\..\Output_files\Scores_' ff(iNet).name],'PC_this_example','idx_dir','idx_pos','idx_dist','idx_Ncycle','trials_idx','Inputs_all')
 
             if plot_supp
-                do_plot_pred=1;
+                figure(prep_fig)
+                plot_preparation_all_conditions(states,idx_dir, idx_pos, idx_cycle,exec,column)
+                figure(figW)
             else
-                do_plot_pred=0;
+               
             end
         else
-            do_plot_pred=0;
+           
         end
 
-
-        %do_plot_pred=1;
 
         if  strcmp(ff(iNet).name, 'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat')
             figure(figW)
@@ -343,7 +343,8 @@ for iNet=1:Nnetworks
             plot_LDS = 0;
         end
 
-        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,do_plot_pred,plot_column,plot_init,prep_fig,plot_LDS,plot_supp_figs.LDS);
+        [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,plot_column,plot_init,plot_LDS,plot_supp_figs.LDS);
+        
 
         start=start+4;
 

@@ -12,11 +12,11 @@ function Dist2Att = distance_to_attractor(states,idx_cycle,idx_Ncycle,idx_dir,id
 %   states      : [T x N] matrix of neural activity (T time points,
 %                 N neurons).
 %
-%   idx_cycle   : [T x 1] vector indicating the cycle type for each time
-%                 point (e.g. rhythmic vs discrete cycles).
+%   idx_cycle   : [T x 1] vector indicating the total distance (Number of cycles) the animal
+%   covers in the trial [0.5 1 2 4 7]
 %
 %   idx_Ncycle  : [T x 1] vector indicating the current cycle number performed within a
-%                 rhythmic sequence.
+%                 movement.
 %
 %   idx_dir     : [T x 1] vector of movement or task direction labels.
 %

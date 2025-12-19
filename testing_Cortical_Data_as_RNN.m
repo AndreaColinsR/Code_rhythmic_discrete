@@ -21,7 +21,7 @@ if plot_supp_figs.do_plot == 1
         prep_fig = plot_supp_figs.Prep_SMA;
         dpca_fig = plot_supp_figs.dPCA_SMA;
     end
-else 
+else
     prep_fig = [];
     dpca_fig = [];
 end
@@ -29,38 +29,10 @@ end
 for i_animal=1:Nanimals
 
     load(['.\Output_files\scores_' animal{i_animal} '_'  region_name '.mat'],'FR','scores','idx_dir','idx_pos','idx_dist','exec','idx_Ncycle')
-
-    if plot_supp_figs.do_plot == 1
-        if (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'SMA'))
-            plot_this_animal = 1;
-        else
-            plot_this_animal = 0;
-        end
-    else
-        plot_this_animal = 0;
-    end
-    %% plot correct example initial conditions
-    if strcmp(region_name,'SMA') && strcmp(animal{i_animal},'Cousteau')
-        figure(figW)
-        plot_init = 1;
-        subplot(4,4,8+column)
-    else
-        plot_init = 0;
-    end
-    
-    if strcmp(region_name,'M1') && strcmp(animal{i_animal},'Cousteau')
-        plot_LDS =1;
-    else
-        plot_LDS = 0;
-    end
-
-    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,plot_this_animal,column,plot_init,prep_fig,plot_LDS,plot_supp_figs.LDS);
-    Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
-
-
-    figure(figW)
+     
+    %% PLot example trajectories
     if (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'SMA'))
-
+        figure(figW)
         i_dir = 2;
         i_pos = 1;
         idx_rhythmic=idx_dir==i_dir & idx_pos==i_pos & idx_dist==7;
@@ -86,6 +58,34 @@ for i_animal=1:Nanimals
         zlabel('PC 3')
     end
 
+    %% Plot preparation (supp)
+    if plot_supp_figs.do_plot == 1
+        if (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'SMA')) 
+                figure(prep_fig)
+            plot_preparation_all_conditions(FR,idx_dir, idx_pos, idx_dist,exec,column)
+        end
+    end
+
+    %% Plot initial conditions in SMA
+    if strcmp(region_name,'SMA') && strcmp(animal{i_animal},'Cousteau')
+        figure(figW)
+        plot_init = 1;
+        subplot(4,4,8+column)
+    else
+        plot_init = 0;
+    end
+
+    %% Plot Linear Dynamical Sytem (LDS) and angle results
+    if strcmp(region_name,'M1') && strcmp(animal{i_animal},'Cousteau')
+        plot_LDS =1;
+    else
+        plot_LDS = 0;
+    end
+
+    [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(FR,idx_dir,idx_pos,idx_dist,exec,idx_Ncycle,column,plot_init,plot_LDS,plot_supp_figs.LDS);
+
+    Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
+
 
     [~,prepdata]=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle);
 
@@ -99,7 +99,8 @@ for i_animal=1:Nanimals
             do_plot = 0;
         end
     end
-    [~,Per_prep]=dPCA_across_conditions(prepdata.FR,prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot,column);
+
+    [~,Per_prep] = dPCA_across_conditions(prepdata.FR,prepdata.ndir,prepdata.npos,prepdata.ndist,do_plot,column);
 
     if plot_supp_figs.do_plot == 1
         figure(dpca_fig)
@@ -112,11 +113,12 @@ for i_animal=1:Nanimals
 
     end
 
+
     Mean_dist_An(1:size(Dist2Att,1),:,i_animal)=squeeze(mean(Dist2Att(:,:,:),2));
     Mean_over_time(i_animal)=min(mean(Dist2Att(:,:,1),2));
     MinDist=squeeze(min(Dist2Att(:,:,1:2)));
 
-    %% ploting distances to between trajectories of different conditions
+    %% Ploting distances to between trajectories of different conditions
 
     ndims=6;
     Dist_all=compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
@@ -152,7 +154,7 @@ else
 
 end
 
-%% LDS
+%% LDS (Supp M1)
 if strcmp(region_name,'M1') && plot_supp_figs.do_plot == 1
     figure(plot_supp_figs.LDS)
     subplot(2,3,column)

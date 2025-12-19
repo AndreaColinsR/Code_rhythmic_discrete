@@ -15,18 +15,15 @@ function Angle_dir = Angle_planes_disc_rhythm(states,idx_cycle,idx_Ncycle,idx_di
 %       Neural activity matrix (RNN or neural recording), where T is the number of time samples
 %       and N is the number of units or neurons.
 %
-%   idx_cycle : [T x 1] vector
-%       Movement cycle index. Rhythmic trials are identified as
-%       idx_cycle == 7; discrete trials as idx_cycle < 1.
+%   idx_cycle   : [T x 1] vector indicating the total distance (Number of cycles) the animal
+%   covers in the trial [0.5 1 2 4 7]
 %
-%   idx_Ncycle : [T x 1] vector
-%       Cycle count index within a movement.
+%   idx_Ncycle  : [T x 1] vector indicating the current cycle number performed within a
+%                 movement.
 %
-%   idx_dir : [T x 1] vector
-%       Movement direction index for each movement.
+%   idx_dir     : [T x 1] vector of movement or task direction labels.
 %
-%   idx_pos : [T x 1] vector
-%       Movement position index for each movement.
+%   idx_pos     : [T x 1] vector of position or task condition labels.
 %
 %   do_plot : logical scalar
 %       If do_plot equals 1, a 3-D PCA visualization of discrete and rhythmic trajectories
