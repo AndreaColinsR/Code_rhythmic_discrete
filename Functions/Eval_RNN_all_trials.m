@@ -1,4 +1,4 @@
-function [scores,trials_idx,R2,FRoutput,all_state,Edit_output]=Simulating_trained_RNN_EMG_Hyp(Input,NetParams,Output,exec,idx_trial_test,do_plot)
+function [scores,trials_idx,R2,FRoutput,all_state,Edit_output]=Eval_RNN_all_trials(Input,NetParams,Output,exec,idx_trial_test,do_plot)
 
 
 Ntimes=size(Input,1);
@@ -32,12 +32,6 @@ end
 for itrials=1:Ntrials
     I_this_trial=squeeze(Input(:,itrials,:));
     mov_end=find(exec(itrials,:)>0,1,'last')+40;
-% 
-%     if ~isnan(idx_trial_test(itrials,1)) && idx_trial_test(itrials,1)<2
-%          I_this_trial(30:70,7)=0.1;
-%      elseif ~isnan(idx_trial_test(itrials,1)) && idx_trial_test(itrials,1)>=2
-%         I_this_trial(30:70,6)=0.1;
-%      end
     
     if rotate
         NetParams=rotate_angle_for_test(NetParams,idx_trial_test(itrials,1));
@@ -56,8 +50,7 @@ for itrials=1:Ntrials
    trials_idx(counter+1:counter+mov_end)=itrials;
 
    Edit_output(counter+1:counter+mov_end,:)=Output(Ntimes*(itrials-1)+1:(Ntimes*(itrials-1)+mov_end),:);
-   % [FRoutput(Ntimes*(itrials-1)+1:Ntimes*itrials,:),all_state(Ntimes*(itrials-1)+1:Ntimes*itrials,:)]=evalRNN(I_this_trial,NetParams);
-   %trials_idx(Ntimes*(itrials-1)+1:Ntimes*itrials)=itrials;
+
 
    counter=counter+mov_end;
 

@@ -15,9 +15,9 @@ function [Angle_disc_rhythm,Init_cond_t,Dist2Att] = RNNs_predictions(states,idx_
 %       Neural activity matrix (RNN or neural recording), where T is the number of time samples
 %       and N is the number of units or neurons.
 %
-%   idx_dir     : [T x 1] vector of movement direction labels.
+%   idx_dir     : [T x 1] vector of movement or task direction labels.
 %
-%   idx_pos     : [T x 1] vector of position condition labels.
+%   idx_pos     : [T x 1] vector of position or task condition labels.
 %
 %   idx_cycle   : [T x 1] vector indicating the total distance (Number of cycles) the animal
 %   covers in the trial [0.5 1 2 4 7]

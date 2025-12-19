@@ -1,11 +1,45 @@
 function Create_Inputs_RNN
+% CREATE_INPUTS_RNN  Generate RNN input datasets to train RNN models using
+% Tensorflow
+%
+%   CREATE_INPUTS_RNN generates and saves all input and output structures
+%   required to train recurrent neural networks (RNNs) modelling motor
+%   cortical activity. The function prepares datasets for both primary
+%   motor cortex (M1) and supplementary motor area (SMA) models, under
+%   different control hypotheses.
+%
+%
+% INPUT DATA FILES
+% ----------------
+% The function expects the following MAT-files to exist:
+%
+%   .\Output_files\scores_<animal>_<output_region>.mat
+%
+% This files is created by the function CREATE_ALL_OUTPUT_FILES.
+% Each file must contain:
+%   - scores (PCA neural trajectories)
+%   - idx_dir
+%   - idx_Ncycle
+%   - idx_pos
+%   - idx_dist
+%
+% OUTPUT
+% -------------------------------------------------------------------------
+% This function does not return variables to the MATLAB workspace.
+% All outputs are saved to disk by the corresponding input-generation
+% functions in:
+%
+%   .\Output_files\RNNs_Inputs\
+%
+%
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
 
-animal={'Cousteau','Drake'}; % 'E' or 'F'
+animal={'Cousteau','Drake'}; 
 timesmov=[-1000 400];
 
 %% For M1 models
-
-region_name = 'M1';
 output_region = 'EMG';
 
 for i_animal=1:numel(animal)
@@ -17,7 +51,6 @@ for i_animal=1:numel(animal)
 end
 
 %% For SMA models
-region_name = 'SMA';
 output_region = 'M1';
 
 for i_animal=1:numel(animal)
@@ -31,14 +64,78 @@ end
 end
 
 function Create_Inputs_same_M1(animal,timesmov,scores,idx_dir,idx_pos,idx_Ncycle,idx_dist)
-%% Create_Inputs_same creates and saves the inputs to the RNNs that model M1 activity same control hypothesis
-%% This model has 3 inputs: Start position, movement end and movement direction. Start position and movement direction are one-hot coded so that there are 5 inputs for each trial
-
-%% 5 inputs
-% 1 and 2 indicate the start of mov and start pos
-% 3 indicates movement end
-% 4 and 5 indicate the start of mov (same timing than 1 and 2) and
-% direction
+% CREATE_INPUTS_SAME_M1  Create and save inputs for RNNs modelling M1
+% activity under the "same control" hypothesis
+%
+%   The model uses five input channels describing movement-related events:
+%     1–2 : Starting position (one-hot encoded)
+%     3   : Movement end
+%     4–5 : Movement direction (one-hot encoded)
+%
+%   Start position and movement direction are encoded using two channels
+%   each, with activity occurring around movement onset. Movement end is
+%   encoded using a single channel with activity around movement offset.
+%
+%   The function interpolates EMG data to a fixed number of time steps,
+%   constructs corresponding input signals, and saves the resulting
+%   variables to a MAT-file.
+%
+%   INPUTS
+%   ------
+%   animal          : Character array
+%                     Identifier of the animal (used for file naming)
+%
+%   timesmov        : Numeric vector [1 x 2]
+%                     Movement onset and offset times (in ms)
+%
+%   scores          : [T x D] matrix
+%                     EMG neural trajectories matrix where T is the number of time samples
+%                     and D is the number of dimensions; the first four dimensions are used
+%                     as output dimensions
+%
+%   idx_dir         : [T x 1] vector of movement or task direction labels.
+%
+%   idx_pos         : [T x 1] vector of position or task condition labels.
+%
+%   idx_Ncycle      : [T x 1] vector indicating the current cycle number performed within a
+%                       movement.
+%
+%   idx_dist        : [T x 1] vector indicating the total distance (Number of cycles) the animal
+%                    covers in the trial [0.5 1 2 4 7]
+%
+%
+%   OUTPUT
+%   ------
+%   Input           : [trials (20) × timesteps × 5 (Channels input)] Numeric array
+%                     RNN input tensor of size
+%                     
+%
+%   Output          : [trials × timesteps × 4 (Dimensions)] Numeric array
+%                     RNN output tensor (EMG) of size
+%                     
+%
+%   idx_pos_trial   : Numeric vector
+%                     Starting position associated with each trial
+%
+%   idx_dir_trial   : Numeric vector
+%                     Movement direction associated with each trial
+%
+%   idx_cycle_trial : Numeric vector
+%                     Cycle condition associated with each trial
+%
+%   exec            : Numeric array
+%                     Binary matrix indicating movement execution period
+%                     for each trial
+%
+%   idx_current_cycle : Numeric array
+%                       Interpolated cycle index over time for each trial
+%
+%   The outputs are saved to:
+%     .\Output_files\RNNs_Inputs\M1_<animal>_same.mat
+%
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
 
 %% Parameters
 Ncycle=unique(idx_dist); %[0.5, 1,2, 4,7]
@@ -115,14 +212,83 @@ save(['.\Output_files\RNNs_Inputs\M1_' animal '_same.mat'],'Input','Output','idx
 end
 
 function Create_Inputs_different_M1(animal,timesmov,scores,idx_dir,idx_pos,idx_Ncycle,idx_dist)
-%% Create_Inputs_same creates and saves the inputs to the RNNs that model M1 activity same control hypothesis
-%% This model has 3 inputs: Start position, movement end and movement direction. Start position and movement direction are one-hot coded so that there are 5 inputs for each trial
-
-%% 5 inputs
-% 1 and 2 indicate the start of mov and start pos
-% 3 indicates movement end
-% 4 and 5 indicate the start of mov (same timing than 1 and 2) and
-% direction
+% CREATE_INPUTS_DIFFERENT_M1  Create and save inputs for RNNs modelling M1
+% activity under the "different control" hypothesis
+%
+%   The model uses five input channels describing movement-related events:
+%     1–2 : Starting position (one-hot encoded)
+%     3   : Movement end
+%     4–5 : Movement direction (one-hot encoded)
+%     6–7 : Movement type (rhythmic or discrete, one-hot encoded)
+%
+%   Start position, movement direction and movement type are encoded using two channels
+%   each, with activity occurring around movement onset. Movement end is
+%   encoded using a single channel with activity around movement offset.
+%
+%   The function interpolates EMG data to a fixed number of time steps,
+%   constructs corresponding input signals, and saves the resulting
+%   variables to a MAT-file.
+%
+%   INPUTS
+%   ------
+%   animal          : Character array
+%                     Identifier of the animal (used for file naming)
+%
+%   timesmov        : Numeric vector [1 x 2]
+%                     Movement onset and offset times (in ms)
+%
+%   scores          : [T x D] matrix
+%                     EMG neural trajectories matrix where T is the number of time samples
+%                     and D is the number of dimensions; the first four dimensions are used
+%                     as output dimensions
+%
+%   idx_dir         : [T x 1] vector of movement or task direction labels.
+%
+%   idx_pos         : [T x 1] vector of position or task condition labels.
+%
+%   idx_Ncycle      : [T x 1] vector indicating the current cycle number performed within a
+%                       movement.
+%
+%   idx_dist        : [T x 1] vector indicating the total distance (Number of cycles) the animal
+%                    covers in the trial [0.5 1 2 4 7]
+%
+%
+%   OUTPUT
+%   ------
+%   Input           : [trials (20) × timesteps × 7 (Channels input)] Numeric array
+%                     RNN input tensor of size
+%                     
+%
+%   Output          : [trials × timesteps × 4 (Dimensions)] Numeric array
+%                     RNN output tensor (EMG) of size
+%                     
+%
+%   idx_pos_trial   : Numeric vector
+%                     Starting position associated with each trial
+%
+%   idx_dir_trial   : Numeric vector
+%                     Movement direction associated with each trial
+%
+%   idx_cycle_trial : Numeric vector
+%                     Cycle condition associated with each trial
+%
+%   exec            : Numeric array
+%                     Binary matrix indicating movement execution period
+%                     for each trial
+%
+%   idx_current_cycle : Numeric array
+%                       Interpolated cycle index over time for each trial
+% 
+%   Btask           : [2 x Neurons] Numeric array
+%                     Two orthogonal vectors that can be used as fixed
+%                     weights for the movement type inputs. 
+%
+%   The outputs are saved to:
+%     .\Output_files\RNNs_Inputs\M1_<animal>_different.mat
+%
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
 
 %% Parameters
 Ncycle=unique(idx_dist); %[0.5, 1,2, 4,7]
@@ -210,14 +376,78 @@ save(['.\Output_files\RNNs_Inputs\M1_' animal '_different.mat'],'Input','Output'
 end
 
 function Create_Inputs_same_SMA(animal,timesmov,scores,idx_dir,idx_pos,idx_Ncycle,idx_dist)
-%% Create_Inputs_same creates and saves the inputs to the RNNs that model M1 activity same control hypothesis
-%% This model has 3 inputs: Start position, movement end and movement direction. Start position and movement direction are one-hot coded so that there are 5 inputs for each trial
-
-%% 5 inputs
-% 1 and 2 indicate the start of mov and start pos
-% 3 indicates movement end
-% 4 and 5 indicate the start of mov (same timing than 1 and 2) and
-% direction
+% CREATE_INPUTS_SAME_SMA  Create and save inputs for RNNs modelling SMA
+% activity under the "same control" hypothesis
+%
+%   The model uses five input channels describing movement-related events:
+%     1–2 : Starting position (one-hot encoded)
+%     3   : Temporal context
+%     4–5 : Movement direction (one-hot encoded)
+%
+%   Start position and movement direction are encoded using two channels
+%   each, with activity occurring around movement onset. Temporal context is
+%   encoded using a single channel with activity that is stable during preparation and decreasing during execution.
+%
+%   The function interpolates M1 data to a fixed number of time steps,
+%   constructs corresponding input signals, and saves the resulting
+%   variables to a MAT-file.
+%
+%   INPUTS
+%   ------
+%   animal          : Character array
+%                     Identifier of the animal (used for file naming)
+%
+%   timesmov        : Numeric vector [1 x 2]
+%                     Movement onset and offset times (in ms)
+%
+%   scores          : [T x D] matrix
+%                     M1 neural trajectories matrix where T is the number of time samples
+%                     and D is the number of dimensions; the first four dimensions are used
+%                     as output dimensions
+%
+%   idx_dir         : [T x 1] vector of movement or task direction labels.
+%
+%   idx_pos         : [T x 1] vector of position or task condition labels.
+%
+%   idx_Ncycle      : [T x 1] vector indicating the current cycle number performed within a
+%                       movement.
+%
+%   idx_dist        : [T x 1] vector indicating the total distance (Number of cycles) the animal
+%                    covers in the trial [0.5 1 2 4 7]
+%
+%
+%   OUTPUT
+%   ------
+%   Input           : [trials (20) × timesteps × 5 (Channels input)] Numeric array
+%                     RNN input tensor of size
+%                     
+%
+%   Output          : [trials × timesteps × 4 (Dimensions)] Numeric array
+%                     RNN output tensor (M1) of size
+%                     
+%
+%   idx_pos_trial   : Numeric vector
+%                     Starting position associated with each trial
+%
+%   idx_dir_trial   : Numeric vector
+%                     Movement direction associated with each trial
+%
+%   idx_cycle_trial : Numeric vector
+%                     Cycle condition associated with each trial
+%
+%   exec            : Numeric array
+%                     Binary matrix indicating movement execution period
+%                     for each trial
+%
+%   idx_current_cycle : Numeric array
+%                       Interpolated cycle index over time for each trial
+%
+%   The outputs are saved to:
+%     .\Output_files\RNNs_Inputs\SMA_<animal>_same.mat
+%
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
 
 %% Parameters
 Ncycle=unique(idx_dist); %[0.5, 1,2, 4,7]
@@ -300,14 +530,84 @@ save(['.\Output_files\RNNs_Inputs\SMA_' animal '_same.mat'],'Input','Output','id
 end
 
 function Create_Inputs_different_SMA(animal,timesmov,scores,idx_dir,idx_pos,idx_Ncycle,idx_dist)
-%% Create_Inputs_same creates and saves the inputs to the RNNs that model M1 activity same control hypothesis
-%% This model has 3 inputs: Start position, movement end and movement direction. Start position and movement direction are one-hot coded so that there are 5 inputs for each trial
-
-%% 5 inputs
-% 1 and 2 indicate the start of mov and start pos
-% 3 indicates movement end
-% 4 and 5 indicate the start of mov (same timing than 1 and 2) and
-% direction
+% CREATE_INPUTS_DIFFERENT_SMA  Create and save inputs for RNNs modelling SMA
+% activity under the "same control" hypothesis
+%
+%   The model uses five input channels describing movement-related events:
+%     1–2 : Starting position (one-hot encoded)
+%     3   : Empty (to match M1 model)
+%     4–5 : Movement direction (one-hot encoded)
+%     6–7 : Movement type, temporal context (rhythmic or discrete, one-hot encoded)
+%
+%   Start position, movement direction are encoded using two channels
+%   each, with activity occurring around movement onset. Movement type is
+%   encoded using a two channels with stable activity during preparation and 
+%   decreasing activity during execution. This way, these channels also indicate temporal context.
+%
+%   The function interpolates M1 data to a fixed number of time steps,
+%   constructs corresponding input signals, and saves the resulting
+%   variables to a MAT-file.
+%
+%   INPUTS
+%   ------
+%   animal          : Character array
+%                     Identifier of the animal (used for file naming)
+%
+%   timesmov        : Numeric vector [1 x 2]
+%                     Movement onset and offset times (in ms)
+%
+%   scores          : [T x D] matrix
+%                     M1 neural trajectories matrix where T is the number of time samples
+%                     and D is the number of dimensions; the first four dimensions are used
+%                     as output dimensions
+%
+%   idx_dir         : [T x 1] vector of movement or task direction labels.
+%
+%   idx_pos         : [T x 1] vector of position or task condition labels.
+%
+%   idx_Ncycle      : [T x 1] vector indicating the current cycle number performed within a
+%                       movement.
+%
+%   idx_dist        : [T x 1] vector indicating the total distance (Number of cycles) the animal
+%                    covers in the trial [0.5 1 2 4 7]
+%
+%
+%   OUTPUT
+%   ------
+%   Input           : [trials (20) × timesteps × 5 (Channels input)] Numeric array
+%                     RNN input tensor of size
+%                     
+%
+%   Output          : [trials × timesteps × 4 (Dimensions)] Numeric array
+%                     RNN output tensor (M1) of size
+%                     
+%
+%   idx_pos_trial   : Numeric vector
+%                     Starting position associated with each trial
+%
+%   idx_dir_trial   : Numeric vector
+%                     Movement direction associated with each trial
+%
+%   idx_cycle_trial : Numeric vector
+%                     Cycle condition associated with each trial
+%
+%   exec            : Numeric array
+%                     Binary matrix indicating movement execution period
+%                     for each trial
+%
+%   idx_current_cycle : Numeric array
+%                       Interpolated cycle index over time for each trial
+%
+%   Btask           : [2 x Neurons] Numeric array
+%                     Two orthogonal vectors that can be used as fixed
+%                     weights for the movement type inputs. 
+%
+%   The outputs are saved to:
+%     .\Output_files\RNNs_Inputs\SMA_<animal>_different.mat
+%
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
 
 %% Parameters
 Ncycle=unique(idx_dist); %[0.5, 1,2, 4,7]

@@ -1,0 +1,97 @@
+function Dist_all = Distances_across_conditions(scores,idx_dir,idx_pos,idx_dist)
+% DISTANCES_ACROSS_CONDITIONS Quantifies the separation between neural or RNN population trajectories
+% across different task variables by computing pairwise Euclidean distances
+% over time. The function compares trajectories across:Movement distance
+% (number of cycles), Movement direction and Initial position. Distances 
+% are normalised by the maximum separation observed between trajectories 
+% originating from different initial positions.
+%
+%   DISTANCES_ACROSS_CONDITIONS(scores,idx_dir,idx_pos,idx_dist)
+%
+%
+%   INPUTS
+%   ------
+%   scores      : [T x N] matrix
+%       Low-dimensional neural or RNN activity (e.g. PCA scores), where T
+%       is the number of time samples and N is the number of dimensions.
+%
+%   idx_dir     : [T x 1] vector
+%       Movement direction labels.
+%
+%   idx_pos     : [T x 1] vector
+%       Initial position condition labels.
+%
+%   idx_cycle   : [T x 1] vector 
+%       Total distance (Number of cycles) the animal
+%   covers in the trial [0.5 1 2 4 7].
+%
+%   OUTPUTS
+%   -------
+%   Dist_all    : [T x 3] matrix
+%       Normalised trajectory separation over time. Columns correspond to:
+%           1) Separation across movement distance (cycles)
+%           2) Separation across movement direction
+%           3) Separation across initial position
+%
+% Andrea Colins
+% 19/12/2025
+
+
+Ndist=max(idx_dist);
+Ndir=max(idx_dir);
+Npos=max(idx_pos);
+
+Nt=sum(idx_pos==1 & idx_dir==1 & idx_dist==1);
+Ncomb=Ndist*(Ndist-1)./2;
+total_dist=nan(Nt,Ncomb*Ndir*Npos);
+counter=1;
+%% Across Number of Cycless
+for i_pos=1:Npos
+    for i_dir=1:Ndir
+        cond_ex=idx_pos==i_pos & idx_dir==i_dir;        
+        total_dist(:,(Ncomb*(counter-1)+1):Ncomb*counter)=Euclidean_distance_over_time_single_cond(scores(cond_ex,:),idx_dist(cond_ex));
+        counter=counter+1;
+        
+    end
+end
+
+%% Across direction
+Ncomb=1;
+total_dist_dir=nan(Nt,Ncomb*Ndist*Npos);
+counter=1;
+
+for i_pos=1:Npos
+    for i_dist=1:Ndist
+        cond_ex=idx_pos==i_pos & idx_dist==i_dist;
+        total_dist_dir(:,counter)=Euclidean_distance_over_time_single_cond(scores(cond_ex,:),idx_dir(cond_ex));
+        
+        counter=counter+1;
+
+    end
+end
+
+%% Across Positions
+Ncomb=1;
+total_dist_pos=nan(Nt,Ncomb*Ndist*Npos);
+counter=1;
+
+for i_dir=1:Ndir
+    for i_dist=1:Ndist
+        cond_ex=idx_dir==i_dir & idx_dist==i_dist;
+         total_dist_pos(:,counter) = Euclidean_distance_over_time_single_cond(scores(cond_ex,:),idx_pos(cond_ex));
+        
+        counter=counter+1;
+    end
+end
+
+% maximum separation of trajectories of different initial position
+max_sep_pos=max(mean(total_dist_pos,2));
+
+% Normalise distances
+Dist_cycle=mean(total_dist,2)./max_sep_pos;
+Dist_dir=mean(total_dist_dir,2)./max_sep_pos;
+Dist_pos=mean(total_dist_pos,2)./max_sep_pos;
+
+Dist_all=[Dist_cycle,Dist_dir,Dist_pos];
+
+end
