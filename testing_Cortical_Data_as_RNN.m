@@ -1,13 +1,65 @@
 function testing_Cortical_Data_as_RNN(region_name,figW,plot_supp_figs)
+% TESTING_CORTICAL_DATA_AS_RNN  Analyses cortical recordings a plots
+% necessary figures of the paper
+%
+%
+%   TESTING_CORTICAL_DATA_AS_RNN(region_name,figW,plot_supp_figs)
+%
+%   INPUTS
+%   ------
+%   region_name     : Character array
+%                     Name of the cortical region to be analysed ('M1' or 'SMA')
+%
+%   figW            : Figure handle 
+%                     Name of figure where plots will be placed
+%
+%   plot_supp_figs  : Structure with the information regarding
+%   supplementary figures. 
+%                   Fields:
+%
+%                     do_plot   : Scalar (logical or numeric, 0 or 1)
+%                                 Flag indicating whether supplementary
+%                                 figures should be generated.
+%                                 1 = generate supplementary plots
+%                                 0 = skip all supplementary plots
+%
+%                     Prep_M1   : Figure handle
+%                                 Figure used for supplementary
+%                                 preparation-period plots in M1.
+%
+%                     Prep_SMA  : Figure handle
+%                                 Figure used for supplementary
+%                                 preparation-period plots in SMA.
+%
+%                     dPCA_M1   : Figure handle
+%                                 Figure used for supplementary dPCA
+%                                 analyses in M1.
+%
+%                     dPCA_SMA  : Figure handle
+%                                 Figure used for supplementary dPCA
+%                                 analyses in SMA.
+%
+%                     LDS       : Figure handle
+%                                 Figure used for supplementary Linear
+%                                 Dynamical System (LDS) analyses.
+%
+%
+%   OUTPUT
+%   ------
+%   Plots of example neural trajectories and summary statistics of
+%   predictions of cortical activity
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
 
-animal={'Cousteau','Drake'}; % 'E' or 'F'
+animal={'Cousteau','Drake'}; 
 dists=[0.5 1 2 4 7];
 Ndists=numel(dists);
 Nanimals=numel(animal);
 colour_dist=plasma(Ndists);
 Nplots = 4;
 
-column = 3;
+column = 3; % column of the supanels to plot 
 
 Mean_over_time=nan(1,Nanimals);
 Mean_dist_An=nan(6000,Ndists,Nanimals);

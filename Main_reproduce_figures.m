@@ -10,14 +10,14 @@ function Main_reproduce_figures
 % Andrea Colins Rodriguez
 
 %% Office
- jPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
- dPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
+ %jPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
+ %dPCA_path='C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
 % dataset_path = 'C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
 %% home
 tic
-% jPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
-% dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
+ jPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
+ dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
 % 
 dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 addpath('.\Functions')
@@ -63,7 +63,7 @@ region_name='M1';
 figM1=figure;
 %% Analyse neural recordings 
 %testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
-%compare_network_families(region_name,figM1,plot_supp_figs)
+compare_network_families(region_name,figM1,plot_supp_figs)
 
 
 %% Video: 

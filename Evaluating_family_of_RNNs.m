@@ -318,7 +318,7 @@ for iNet=1:Nnetworks
 
             if plot_supp
                 figure(prep_fig)
-                plot_preparation_all_conditions(states,idx_dir, idx_pos, idx_cycle,exec,column)
+                plot_preparation_all_conditions(states,idx_dir, idx_pos, idx_dist,exec2,plot_column)
                 figure(figW)
             else
                

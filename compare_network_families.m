@@ -1,4 +1,60 @@
-function compare_network_families(region_name,Mainfig,plot_supp_figs)
+function compare_network_families(region_name,figW,plot_supp_figs)
+% COMPARE_NETWORK_FAMILIES  Simulates and analises the trained RNNs under 
+% each control hypothesis (Same-control RNN family, Different-control RNN family) and plots
+% necessary figures of the paper. This functions requires that the RNNs are
+% trained and that cortical analyses were already performed by the
+% testing_Cortical_Data_as_RNN function. 
+%
+%
+%   COMPARE_NETWORK_FAMILIES(region_name,figW,plot_supp_figs)
+%
+%   INPUTS
+%   ------
+%   region_name     : Character array
+%                     Name of the cortical region to be analysed ('M1' or 'SMA')
+%
+%   figW            : Figure handle 
+%                     Name of figure where plots will be placed
+%
+%   plot_supp_figs  : Structure with the information regarding
+%   supplementary figures. 
+%                   Fields:
+%
+%                     do_plot   : Scalar (logical or numeric, 0 or 1)
+%                                 Flag indicating whether supplementary
+%                                 figures should be generated.
+%                                 1 = generate supplementary plots
+%                                 0 = skip all supplementary plots
+%
+%                     Prep_M1   : Figure handle
+%                                 Figure used for supplementary
+%                                 preparation-period plots in M1.
+%
+%                     Prep_SMA  : Figure handle
+%                                 Figure used for supplementary
+%                                 preparation-period plots in SMA.
+%
+%                     dPCA_M1   : Figure handle
+%                                 Figure used for supplementary dPCA
+%                                 analyses in M1.
+%
+%                     dPCA_SMA  : Figure handle
+%                                 Figure used for supplementary dPCA
+%                                 analyses in SMA.
+%
+%                     LDS       : Figure handle
+%                                 Figure used for supplementary Linear
+%                                 Dynamical System (LDS) analyses.
+%
+%
+%   OUTPUT
+%   ------
+%   Plots of example neural trajectories and summary statistics of
+%   predictions of cortical activity
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
+
 
 plot_supp = plot_supp_figs.do_plot;
 
@@ -49,16 +105,17 @@ for i_family=1:Nfamilies
         type = 1;
     end
 
-    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp_figs,Mainfig,i_family);
+    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp_figs,figW,i_family);
     idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
 
     cd(my_dir)
 end
-%%
-%%%%% Plot results 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plot results 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-figure(Mainfig)
+figure(figW)
 
 subplot(4,4,4)
 hold on
@@ -96,24 +153,6 @@ xticklabels({region_name,'Same-control','Different-control'})
 ylim([-0.1 1])
 
 
-% test angle between rotations of rhtyhmic movements in different
-% directions are different across families
-%[~,pvalAngDir]=ttest2(Angle_rotRNN(:,1),Angle_rotRNN(:,2))
-
-
-% test if Output weights are significantly different across families
-%[~,pvalOutW]=ttest2(OutW(:,1),OutW(:,2))
-
-%
-% nans=isnan(corr_CC(:,1));
-% corr_CC2=corr_CC(~nans,1);
-% idx_family=idx_family(~nans);
-% [p,t,stats]=anova1(corr_CC2,idx_family)
-% [c,m,h,gnames] = multcompare(stats,"CriticalValueType","dunnett");
-%
-
-
-
 %% supplementary figures
 if plot_supp && strcmp(region_name,'M1')
     figure(plot_supp_figs.LDS)
@@ -128,7 +167,7 @@ if plot_supp && strcmp(region_name,'M1')
     xticklabels({region_name,'Same-control','Different-control'})
     box off
 
-    figure(Mainfig)
+    figure(figW)
 end
 
 if strcmp(region_name,'M1')
@@ -190,11 +229,10 @@ end
 end
 
 function results=get_neural_trajectories_info(region_name,output_region,animal)
-%% compare aligment to subspaces across animals
+
 load(['.\Output_files\scores_' animal{1} '_'  region_name '.mat'],'scores','idx_dir','idx_pos','idx_dist','Angle_disc_rhythm','Per_prep','Init_cond_t','MinDist','Dist_all')
 scores1=scores;
 cond_idx1=[idx_dir,idx_pos,idx_dist];
-%Angle_rot1=Angle_rot_cycles;
 Angle_exec1=Angle_disc_rhythm;
 Per_prep1=Per_prep;
 Init_cond_t1=Init_cond_t; %% Add this to the plot
@@ -209,7 +247,6 @@ clear scores idx_dir idx_pos idx_dist Angle_rot_cycles Angle_disc_rhythm
 load(['.\Output_files\scores_' animal{2} '_'  region_name '.mat'],'scores','idx_dir','idx_pos','idx_dist','Angle_disc_rhythm','Per_prep','MinDist','Mean_over_time','Dist_all')
 scores2=scores;
 cond_idx2=[idx_dir,idx_pos,idx_dist];
-%Angle_rot2=Angle_rot_cycles;
 Angle_exec2=Angle_disc_rhythm;
 Per_prep2=Per_prep;
 Init_cond_t2=Init_cond_t;
