@@ -2,7 +2,14 @@
 
 The following code creates the first figure of the manuscript "Rhythmic and discrete arm movements arise from 
 the same solution in Primary Motor Cortex but not in the Supplementary Motor Area". 
-The code on this repository is for code review purposes only.
+
+> Rhythmic and discrete arm movements arise from  the same solution in Primary Motor Cortex but not in the Supplementary Motor Area
+> 
+> Andrea Colins Rodriguez, Romulo Fuentes, Mark D. Humphries
+> 
+>  [DOI: XX](XX)
+
+
 
 # How to run this code:
 ## Dependencies
@@ -10,6 +17,7 @@ This code performs jPCA and dPCA. The toolboxes requiered for these analyses can
 -  dPCA: [dPCA toolbox](https://github.com/machenslab/dPCA)
 -  jPCA: [dPCA toolbox](https://churchland.zuckermaninstitute.columbia.edu/content/code)
 
+## Running the analysis
 1. Download the data of the "Two-target cycling task" from Russo et al. 2020 from its [repository](https://data.mendeley.com/datasets/tfcwp8bp5j/1)
 2. Download the code of this repository
 3. Place the dataset in a folder separate from the code and save its path
