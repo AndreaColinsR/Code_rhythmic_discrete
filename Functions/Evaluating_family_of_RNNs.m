@@ -250,7 +250,7 @@ for iNet=1:Nnetworks
     % post process only if succesful
     if R2(iNet,2)>=0.8
 
-        [idx_dir,idx_pos,idx_Ncycle,idx_dist,~,exec2]=find_idx_conds(trials_idx,info.idx_conds_all,idx_current_cycle);
+        [idx_dir,idx_pos,idx_Ncycle,idx_dist,exec2]=find_idx_conds(trials_idx,info.idx_conds_all,idx_current_cycle);
 
         %% LDS
         if strcmp(region_name,'M1') && plot_supp
@@ -288,7 +288,7 @@ for iNet=1:Nnetworks
 
         figure(figW)
         %% Euclidean distance between trajectories
-        Dist_all_prep(:,:,iNet) = compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
+        Dist_all_prep(:,:,iNet) = Distances_across_conditions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
 
         if strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_14_SLen300v2.mat') ||  strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_12_Orth_start.mat')  || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat')
 

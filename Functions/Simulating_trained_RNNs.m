@@ -1,5 +1,63 @@
 function [scores,trials_idx,R2,FRoutput,all_state,Coutput_reformat] = Simulating_trained_RNNs(Input,NetParams,Cortical_Output,exec)
-%% Not a clue why I need this function. Check if I can get rid of it. 
+% SIMULATING_TRAINED_RNNS Evaluates a recurrent neural network (RNN) across all
+% trials, computing outputs, hidden states, and performance metrics.
+%
+% This function simulates the RNN trial by trial, using input signals and
+% network parameters, and returns firing rate outputs, hidden states,
+% principal component scores, and the trial-aligned outputs. It can
+% optionally generate visualisations of inputs, outputs, neural states,
+% and principal components.
+%
+%
+%  [scores,trials_idx,R2,FRoutput,all_state,Coutput_reformat] = ...
+%      EVAL_RNN_ALL_TRIALS(Input,NetParams,Cortical_Output,exec)
+%
+%   INPUTS
+%   ------
+%   Input           : [T x Ntrials x Nin] array
+%       Input signals for all trials, where T is the number of time samples,
+%       Ntrials is the number of trials, and Nin is the number of input channels.
+%
+%   NetParams       : structure
+%       Structure containing the trained RNN parameters, with fields:
+%         - W             : recurrent weight matrix [Nunits x Nunits]
+%         - O             : output weight matrix [Nunits x Nout]
+%         - Ob            : output bias vector [1 x Nout]
+%         - B             : input weight matrix [Nin x Nunits]
+%         - Initial_state : initial hidden state vector [Nunits x 1]
+%
+%   Cortical_Output : [T x Ntrials x Nout] array
+%       Target outputs corresponding to the input trials.
+%
+%   exec            : [Ntrials x T] matrix
+%       Execution of movement flag. exec equals 1 if animals is 
+%       executing a movements, 0 otherwise.
+%
+%   OUTPUTS
+%   -------
+%   scores          : matrix
+%       Principal component scores obtained from PCA applied to the
+%       concatenated RNN states across all trials.
+%
+%   trials_idx      : vector
+%       Index mapping each time point to its corresponding trial.
+%
+%   R2              : scalar
+%       Overall correlation coefficient between target outputs and RNN outputs.
+%
+%   FRoutput        : [Npoints x Nout] matrix
+%       RNN-generated firing rate outputs concatenated across all trials
+%       (Npoints = total time points across all trials).
+%
+%   all_state       : [Npoints x Nunits] matrix
+%       Hidden states of the RNN concatenated across all trials.
+%
+%   Coutput_reformat     : [Npoints x Nout] matrix
+%       Target outputs reshaped and concatenated across all trials.
+%
+% Andrea Colins Rodriguez
+% 19/12/2025
+
 
 Ntimes=size(Input,1);
 Ntrials=size(Input,2);

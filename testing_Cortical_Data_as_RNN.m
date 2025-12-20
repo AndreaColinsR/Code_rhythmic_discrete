@@ -173,7 +173,7 @@ for i_animal=1:Nanimals
     %% Ploting distances to between trajectories of different conditions
 
     ndims=6;
-    Dist_all=compare_traj_directions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
+    Dist_all = Distances_across_conditions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
     prept=size(Dist_all,1);
     t=-prept:-1;
 

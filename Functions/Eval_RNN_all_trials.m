@@ -1,4 +1,67 @@
-function [scores,trials_idx,R2,FRoutput,all_state,Edit_output]=Eval_RNN_all_trials(Input,NetParams,Output,exec,idx_trial_test,do_plot)
+function [scores,trials_idx,R2,FRoutput,all_state,Edit_output]=Eval_RNN_all_trials(Input,NetParams,Output,exec,do_plot)
+% EVAL_RNN_ALL_TRIALS Evaluates a recurrent neural network (RNN) across all
+% trials, computing outputs, hidden states, and performance metrics.
+%
+% This function simulates the RNN trial by trial, using input signals and
+% network parameters, and returns firing rate outputs, hidden states,
+% principal component scores, and the trial-aligned outputs. It can
+% optionally generate visualisations of inputs, outputs, neural states,
+% and principal components.
+%
+%
+%  [scores,trials_idx,R2,FRoutput,all_state,Edit_output] = ...
+%      EVAL_RNN_ALL_TRIALS(Input,NetParams,Output,exec,idx_trial_test,do_plot)
+%
+%   INPUTS
+%   ------
+%   Input           : [T x Ntrials x Nin] array
+%       Input signals for all trials, where T is the number of time samples,
+%       Ntrials is the number of trials, and Nin is the number of input channels.
+%
+%   NetParams       : structure
+%       Structure containing the trained RNN parameters, with fields:
+%         - W             : recurrent weight matrix [Nunits x Nunits]
+%         - O             : output weight matrix [Nunits x Nout]
+%         - Ob            : output bias vector [1 x Nout]
+%         - B             : input weight matrix [Nin x Nunits]
+%         - Initial_state : initial hidden state vector [Nunits x 1]
+%
+%   Output          : [T x Ntrials x Nout] array
+%       Target outputs corresponding to the input trials.
+%
+%   exec            : [Ntrials x K] matrix
+%       Execution flags or condition descriptors for each trial.
+%
+%   idx_trial_test  : [Ntrials x 1] vector
+%       Condition label or index for each trial, used for rotation of inputs
+%       if applicable.
+%
+%   do_plot         : scalar (0 or 1)
+%       Flag indicating whether to generate visualisations of inputs,
+%       outputs, neural states, and principal components.
+%
+%   OUTPUTS
+%   -------
+%   scores          : matrix
+%       Principal component scores obtained from PCA applied to the
+%       concatenated RNN states across all trials.
+%
+%   trials_idx      : vector
+%       Index mapping each time point to its corresponding trial.
+%
+%   R2              : scalar
+%       Overall correlation coefficient between target outputs and RNN outputs.
+%
+%   FRoutput        : [Npoints x Nout] matrix
+%       RNN-generated firing rate outputs concatenated across all trials
+%       (Npoints = total time points across all trials).
+%
+%   all_state       : [Npoints x Nunits] matrix
+%       Hidden states of the RNN concatenated across all trials.
+%
+%   Edit_output     : [Npoints x Nout] matrix
+%       Target outputs reshaped and concatenated across all trials.
+
 
 
 Ntimes=size(Input,1);
@@ -19,31 +82,11 @@ In=zeros(300,size(Input,3));
 [~,all_states_this_trial]=evalRNN(In,NetParams);
 NetParams.S0=all_states_this_trial(end,:)';
 
-
-Orig_pars=NetParams;
-
-%if size(NetParams.B,2)>6
-if size(NetParams.B,2)>10
-    rotate=true;
-else
-    rotate=false;
-end
-
 for itrials=1:Ntrials
     I_this_trial=squeeze(Input(:,itrials,:));
     mov_end=find(exec(itrials,:)>0,1,'last')+40;
-    
-    if rotate
-        NetParams=rotate_angle_for_test(NetParams,idx_trial_test(itrials,1));
-    end
-
-   [FR_this_trial,all_states_this_trial]=evalRNN(I_this_trial,NetParams);
    
-    
-   %% restore original value to rotate the correct angle in the next iteration
-   if rotate
-    NetParams=Orig_pars;
-   end
+   [FR_this_trial,all_states_this_trial]=evalRNN(I_this_trial,NetParams);
 
    FRoutput(counter+1:counter+mov_end,:)=FR_this_trial(1:mov_end,:);
    all_state(counter+1:counter+mov_end,:)=all_states_this_trial(1:mov_end,:);
@@ -121,38 +164,4 @@ end
 
 
 end
-
-function NetParams=rotate_angle_for_test(NetParams,idx_trial_test)
-
-%alpha=pi/2-(pi/2)*([0.5 1 2 4 7]-0.5)/6.5;
-
-
-alpha=pi/2-(pi/2)./(1+exp(4-2*[0.5 1 2 4 7]));
-
-%alpha=(exp(0.5*(0.5-[0.5 1 2 4 7])))*pi/2;
-%Ncycle=[0.5 1 2 4 7];
-
-%% Linear 
-%alpha=fliplr(Ncycle);
-%% log
-%alpha=log(Ncycle(end))-log(Ncycle);
-%% decaying exp
-%alpha=(exp(1./((Ncycle)))-exp(1./((Ncycle(end)))));
-
-
-%alpha=(pi/2)*alpha./max(alpha);
-
-if isnan(idx_trial_test) || idx_trial_test==0.5 || idx_trial_test==7
-    return
-elseif idx_trial_test==1
-    NetParams.B(:,7)=rotate_n_dimensional_vector(NetParams.B(:,6),alpha(2));
-elseif idx_trial_test==2
-    NetParams.B(:,6)=rotate_n_dimensional_vector(NetParams.B(:,6),alpha(3));
-elseif idx_trial_test==4
-    NetParams.B(:,6)=rotate_n_dimensional_vector(NetParams.B(:,6),alpha(4));
-
-end
-
-end
-
 
