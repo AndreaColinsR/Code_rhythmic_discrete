@@ -1,12 +1,38 @@
 function test_raster_different_N_cycles(animal)
-%% test_raster_different_N_cycles plots the rasterplots of the three regions
-% recorded. By default this functions plots the neural activity
-% corresponding to the condition cycling forward starting from the bottom
-% of the cycle for trials of 0.5, 2 and 7 cycles. 
+% TEST_RASTER_DIFFERENT_N_CYCLES Plots raster plots for different cycle counts for one recording.
 %
-% Input:
+% This function generates raster (heatmap) plots of neural activity recorded
+% from three regions (SMA, M1, and EMG) for trials with different numbers of
+% movement cycles. By default, it visualises activity for forward movements
+% starting from the top position, comparing selected cycle counts.Neural 
+% units are sorted according to the timing of their peak activity in
+% the highest cycle condition, allowing consistent ordering across plots.
 %
-% animal: string containing the animal's name e.g. 'Drake' or 'Cousteau'
+%
+%   TEST_RASTER_DIFFERENT_N_CYCLES(animal)
+%
+%   INPUTS
+%   ------
+%   animal : char or string
+%       Name of the animal used to identify the corresponding data files
+%       (e.g. 'Drake' or 'Cousteau').
+%
+%   OUTPUTS
+%   -------
+%   None
+%       The function produces a figure containing multiple raster plots
+%       arranged by brain region and number of cycles.
+%
+%   DETAILS
+%   -------
+%   - Data are loaded from precomputed score files corresponding to each
+%     region (SMA, M1, EMG).
+%   - Raster plots are generated for a subset of available cycle counts
+%     (e.g. 0.5, 2, and 7 cycles), plotted in descending order.
+%   - Neurons are sorted based on the time of peak firing rate within a
+%     specified window for the largest cycle condition, and this ordering
+%     is reused across conditions.
+%   - Time is displayed relative to movement onset.
 %
 % 13/01/2025
 % Andrea Colins Rodriguez

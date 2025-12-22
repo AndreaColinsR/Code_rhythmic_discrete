@@ -284,7 +284,7 @@ for iNet=1:Nnetworks
 
         %% prepare for dPCA
         % dPCA Prep
-        [~,prepdata,~]=get_prep_exec_after_FR(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
+        prepdata=get_prep_exec_after_FR(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
 
         figure(figW)
         %% Euclidean distance between trajectories

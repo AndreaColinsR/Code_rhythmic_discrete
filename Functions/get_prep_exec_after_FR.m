@@ -1,4 +1,4 @@
-function [execdata,prepdata]=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle)
+function prepdata=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle)
 
 
 Ndir=max(idx_dir);

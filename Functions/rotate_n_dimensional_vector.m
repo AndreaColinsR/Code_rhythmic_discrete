@@ -1,5 +1,4 @@
 function v_prime = rotate_n_dimensional_vector(v,a)
-
 % ROTATE_N_DIMENSIONAL_VECTOR rotates an n-D vector by a given angle
 % VPRIME = ROTATE_N_DIMENSIONAL_VECTOR(V,A) rotates the n-dimensional
 % vector in V by the angle A (in radians)
@@ -33,7 +32,7 @@ end
 
 % rotate
 v_prime = v;
-pairs = reshape([1:n],2,n/2)';  % create a list of all pairs
+pairs = reshape(1:n,2,n/2)';  % create a list of all pairs
 for i = 1:floor(n/2)        % skip last dimension if n is odd
     % create unit vectors defining hyperplane between adjacent dimensions
     unit_vector1 = zeros(n,1);
@@ -64,5 +63,5 @@ for i = 1:floor(n/2)        % skip last dimension if n is odd
 end
 
 % for internal checking
-cosine_similarity = v'*v_prime / (norm(v) * norm(v_prime));
+%cosine_similarity = v'*v_prime / (norm(v) * norm(v_prime));
 

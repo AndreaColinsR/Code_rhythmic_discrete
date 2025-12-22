@@ -139,7 +139,7 @@ for i_animal=1:Nanimals
     Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
 
 
-    [~,prepdata]=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle);
+    prepdata=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle);
 
     %% dPCA
     do_plot = 0;
