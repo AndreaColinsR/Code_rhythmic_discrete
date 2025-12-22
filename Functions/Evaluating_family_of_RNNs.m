@@ -89,22 +89,14 @@ plot_fancy_errorbars(3,corr_CC(:,end-2),[0 0 0]) %shuffle test
 text(0.8,1-ifamily*0.1,num2str(pval_shuffle,'%.2e'),'Units','normalized')
 plot_fancy_errorbars(ifamily+0.5,R2(:,2),colour_animal(1,:))
 
-%% var explained
-%subplot(4,4,12)
-%hold on
-%plot_fancy_errorbars(ifamily,Percentage_all_prep(:,1),colour_animal(1,:))
-
-
 corr_CC=corr_CC(:,1:end-3);
 
-%% angle between rhythmic activity of different directions
-% subplot(5,4,12)
-% hold on
-% plot_fancy_errorbars(ifamily,Angle_rot(:),colour_animal(1,:))
 
-Dist_prep_onset=squeeze(Dist_all_prep(end,1,:));
+
 
 %% distaces between trajectories (prep)
+Dist_prep_onset=squeeze(Dist_all_prep(end,1,:));
+
 subplot(4,4,12+ifamily)
 t=fliplr((1:size(Dist_all_prep,1))*-10);
 hold on
@@ -115,17 +107,14 @@ ylim([-0.1 1.2])
 
 if plot_supp
 
-
     %% Angle between rotations in discrete and rhythmic
     if strcmp(region_name,'M1')
-    figure(plot_supp_figs.LDS)
-    subplot(2,4,8)
-    hold on
-    plot_fancy_errorbars(ifamily,Angle_disc_rhyth(:),colour_animal(1,:))
+        figure(plot_supp_figs.LDS)
+        subplot(2,4,8)
+        hold on
+        plot_fancy_errorbars(ifamily,Angle_disc_rhyth(:),colour_animal(1,:))
 
     end
-    
-
 
     % var explained all pars
     if strcmp(region_name,'M1')
@@ -215,7 +204,6 @@ Angle_rot=nan(Nnetworks,1);
 Angle_disc_rhyth=nan(Nnetworks,1);
 Init_cond_t=nan(Nnetworks*4,5);
 Dist2Att_all=nan(Nel,20,numel(dists));
-%epochs_all=nan(1433,20,Nnetworks);
 
 plot_supp = plot_supp_figs.do_plot;
 
@@ -241,7 +229,7 @@ for iNet=1:Nnetworks
         do_plot_output=0;
     end
 
-    % load information of the trained RNN 
+    % load information of the trained RNN
     info = load_RNN_info(ff(iNet).name);
     % Evaluate the trained RNN
     [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,do_plot_output);
@@ -284,7 +272,7 @@ for iNet=1:Nnetworks
 
         %% prepare for dPCA
         % dPCA Prep
-        prepdata=get_prep_exec_after_FR(states,idx_pos,idx_dir,idx_dist,idx_Ncycle);
+        prepdata = get_preparation(states,idx_dir, idx_pos, idx_dist,exec2);
 
         figure(figW)
         %% Euclidean distance between trajectories
@@ -318,13 +306,13 @@ for iNet=1:Nnetworks
 
             if plot_supp
                 figure(prep_fig)
-                plot_preparation_all_conditions(states,idx_dir, idx_pos, idx_dist,exec2,plot_column)
+                plot_preparation_all_conditions(prepdata.scores,prepdata.ndir, prepdata.npos,prepdata.ndist,plot_column)
                 figure(figW)
             else
-               
+
             end
         else
-           
+
         end
 
 
@@ -335,7 +323,7 @@ for iNet=1:Nnetworks
         else
             plot_init = 0;
         end
-        
+
 
         if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousCousteau_5_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateCousteau_1_Orth_start.mat'))
             plot_LDS = 1;
@@ -344,7 +332,7 @@ for iNet=1:Nnetworks
         end
 
         [Angle_disc_rhyth(iNet),Init_cond_t(start:start+3,:),Dist2Att]=RNNs_predictions(states,idx_dir,idx_pos,idx_dist,exec2,idx_Ncycle,plot_column,plot_init,plot_LDS,plot_supp_figs.LDS);
-        
+
 
         start=start+4;
 

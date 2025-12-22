@@ -62,7 +62,7 @@ animal = 'Drake';
 region_name='M1';
 figM1=figure;
 %% Analyse neural recordings 
-%testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
+testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
 compare_network_families(region_name,figM1,plot_supp_figs)
 
 

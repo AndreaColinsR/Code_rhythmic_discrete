@@ -58,6 +58,7 @@ Ndists=numel(dists);
 Nanimals=numel(animal);
 colour_dist=plasma(Ndists);
 Nplots = 4;
+ndims=6;
 
 column = 3; % column of the supanels to plot 
 
@@ -109,12 +110,14 @@ for i_animal=1:Nanimals
         ylabel('PC 2')
         zlabel('PC 3')
     end
+    
+    prepdata = get_preparation(FR,idx_dir, idx_pos, idx_dist,exec);
 
     %% Plot preparation (supp)
     if plot_supp_figs.do_plot == 1
         if (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'SMA')) 
                 figure(prep_fig)
-            plot_preparation_all_conditions(FR,idx_dir, idx_pos, idx_dist,exec,column)
+            plot_preparation_all_conditions(prepdata.scores,prepdata.ndir, prepdata.npos,prepdata.ndist,column)
         end
     end
 
@@ -138,8 +141,6 @@ for i_animal=1:Nanimals
 
     Init_cond_t_all(4*(i_animal-1)+1:4*i_animal,:) = Init_cond_t;
 
-
-    prepdata=get_prep_exec_after_FR(FR,idx_pos,idx_dir,idx_dist,idx_Ncycle);
 
     %% dPCA
     do_plot = 0;
@@ -172,7 +173,7 @@ for i_animal=1:Nanimals
 
     %% Ploting distances to between trajectories of different conditions
 
-    ndims=6;
+    
     Dist_all = Distances_across_conditions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
     prept=size(Dist_all,1);
     t=-prept:-1;
