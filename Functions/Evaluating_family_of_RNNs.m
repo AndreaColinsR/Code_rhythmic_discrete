@@ -87,7 +87,7 @@ plot_fancy_errorbars(ifamily,corr_CC(:,1),colour_animal(1,:)) % main number
 plot_fancy_errorbars(3,corr_CC(:,end-2),[0 0 0]) %shuffle test
 [~,pval_shuffle]=ttest2(corr_CC(:,1),corr_CC(:,end-2));
 text(0.8,1-ifamily*0.1,num2str(pval_shuffle,'%.2e'),'Units','normalized')
-plot_fancy_errorbars(ifamily+0.5,R2(:,2),colour_animal(1,:))
+%plot_fancy_errorbars(ifamily+0.5,R2(:,2),colour_animal(1,:))
 
 corr_CC=corr_CC(:,1:end-3);
 

@@ -21,7 +21,7 @@ function Dist_all = Distances_across_conditions(scores,idx_dir,idx_pos,idx_dist)
 %   idx_pos     : [T x 1] vector
 %       Initial position condition labels.
 %
-%   idx_cycle   : [T x 1] vector 
+%   idx_dist   : [T x 1] vector 
 %       Total distance (Number of cycles) the animal
 %   covers in the trial [0.5 1 2 4 7].
 %

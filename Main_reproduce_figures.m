@@ -76,6 +76,7 @@ i_pos = 1;
 %% Figure 3
 region_name='SMA';
 figSMA=figure;
+
 testing_Cortical_Data_as_RNN(region_name,figSMA,plot_supp_figs)
 compare_network_families(region_name,figSMA,plot_supp_figs)
 

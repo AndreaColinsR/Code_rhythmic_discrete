@@ -1,11 +1,76 @@
 function [epochs,epochs_all]=Detect_dynamics_epochs(eigs_traj,idx_dir,idx_speed,idx_cycles,tstart,t_end,do_plot)
-% aim: Find the epochs with the same dynamical features
-% notation
-% 1= only expansion
-% 2= only contraction
-% 3= only rotation
-% 4= rotation+ expansion
-% 5= roation+ contraction
+% Detect_dynamics_epochs Identifies dynamical epochs from LDS eigenvalue
+% trajectories.
+%
+%   [epochs,epochs_all] = Detect_dynamics_epochs(eigs_traj,idx_dir, ...
+%       idx_speed,idx_cycles,tstart,t_end,do_plot)
+%
+%   This function classifies time-varying dynamical regimes based on the
+%   eigenvalues of locally fitted linear dynamical systems (LDS). Each time
+%   point is assigned to a discrete dynamical epoch reflecting expansion,
+%   contraction and/or rotational dynamics. Epochs are aggregated across
+%   behavioural conditions and can be visualised relative to movement
+%   timing. Rotational dynamics are defined by a minimum imaginary component
+%   corresponding to a maximum oscillatory period of 10 s.Expansion and 
+%   contraction thresholds are defined on the real part of the eigenvalues.
+%
+%   INPUTS
+%   ------
+%
+%   eigs_traj : [T x 2] matrix
+%       Trajectory of dominant LDS eigenvalues, where the first column
+%       contains the real part and the second column contains the imaginary
+%       part of the eigenvalues.
+%
+%   idx_dir : [T x 1] vector
+%       Direction index for each time point.
+%
+%   idx_speed : [T x 1] vector
+%       Speed or position index for each time point.
+%
+%   idx_cycles : [T x 1] vector
+%       Cycle index for each time point, defining repeated movement cycles.
+%
+%   tstart : scalar
+%       Start time (in milliseconds) relative to movement onset.
+%
+%   t_end : [Ncond x 1] vector
+%       End time (in milliseconds) of movement execution for each condition.
+%
+%   do_plot : logical
+%       Flag indicating whether dynamical epochs should be visualised.
+%
+%   OUTPUTS
+%   -------
+%
+%   epochs : [T x 1] vector
+%       Dynamical epoch label assigned to each time point.
+%
+%   epochs_all : [L x Ncond] matrix
+%       Dynamical epoch labels aligned in time and concatenated across all
+%       conditions, where L is the maximum trajectory length.
+%
+%   DESCRIPTION
+%   -----------
+%
+%   Dynamical regimes are defined using thresholds on the real and imaginary
+%   parts of the dominant eigenvalues. Each time point is classified into
+%   one of five categories:
+%
+%       1 – contraction only
+%       2 – rotation with contraction
+%       3 – rotation only
+%       4 – rotation with expansion
+%       5 – expansion only
+%
+%   Epoch labels are grouped by direction, speed and cycle condition to
+%   produce condition-aligned dynamical trajectories. When requested, the
+%   function visualises the resulting epochs using a colour-coded map
+%   aligned to movement onset and offset.
+%
+%
+% Andrea Colins Rodriguez
+% 22/12/2025
 
 ms=1000;
 max_period=10*ms;

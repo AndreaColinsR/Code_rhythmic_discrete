@@ -54,6 +54,7 @@ function testing_Cortical_Data_as_RNN(region_name,figW,plot_supp_figs)
 
 animal={'Cousteau','Drake'}; 
 dists=[0.5 1 2 4 7];
+timesmov = [-1000 400];
 Ndists=numel(dists);
 Nanimals=numel(animal);
 colour_dist=plasma(Ndists);
@@ -211,6 +212,6 @@ end
 if strcmp(region_name,'M1') && plot_supp_figs.do_plot == 1
     figure(plot_supp_figs.LDS)
     subplot(2,3,column)
-    Main_LDS_Cortical('Cousteau',1)
+    Main_LDS_Cortical('Cousteau',timesmov,1)
 
 end
