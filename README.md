@@ -1,9 +1,9 @@
-# Description of cortical activity underyling rhythmic and discrete movements. 
+# Motor cortical dynamics driving rhythmic and discrete movements. 
 
-The following code creates the first figure of the manuscript "Rhythmic and discrete arm movements arise from 
-the same solution in Primary Motor Cortex but not in the Supplementary Motor Area". 
+The following code creates the figures of the manuscript "Primary and Supplementary Motor cortex implement parallel
+solutions for the control of rhythmic and discrete arm movements". 
 
-> Rhythmic and discrete arm movements arise from  the same solution in Primary Motor Cortex but not in the Supplementary Motor Area
+> Primary and Supplementary Motor cortex implement parallel solutions for the control of rhythmic and discrete arm movements
 > 
 > Andrea Colins Rodriguez, Romulo Fuentes, Mark D. Humphries
 > 
@@ -13,7 +13,7 @@ the same solution in Primary Motor Cortex but not in the Supplementary Motor Are
 
 # How to run this code:
 ## Dependencies
-This code performs jPCA and dPCA. The toolboxes requiered for these analyses can be downladed here:
+This code performs jPCA and dPCA. The toolboxes required for these analyses can be downloaded here:
 -  dPCA: [dPCA toolbox](https://github.com/machenslab/dPCA)
 -  jPCA: [dPCA toolbox](https://churchland.zuckermaninstitute.columbia.edu/content/code)
 
@@ -23,13 +23,13 @@ This code performs jPCA and dPCA. The toolboxes requiered for these analyses can
 3. Place the dataset in a folder separate from the code and save its path
 4. Download the jPCA and dPCA toolboxes 
 5. Open the file `Main_reproduce_figures.m`
-6. Replace the path in the variable `dataset_path` for the path where the dataset is.
-7. Replace the paths in the variables  `jPCA_path` and `dPCA_path` for the paths where the dPCA toolbox and this code are
+6. Replace the path in the variable `dataset_path` with the path where the dataset is.
+7. Replace the paths in the variables  `jPCA_path` and `dPCA_path` with the paths where the dPCA toolbox and this code are
 8. Run `Main_reproduce_figures.m`
 
 # Expected output
 
-The code creates a file for each animal and cortical area recorded and store them in a folder called "Output files". Each file contains the behavioural and neural data necessary for later analyses. 
+The code creates a file for each animal and cortical area recorded and stores them in a folder called "Output files". Each file contains the behavioural and neural data necessary for later analyses. 
 
 This script generates:
 
