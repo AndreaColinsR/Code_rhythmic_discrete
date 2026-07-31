@@ -36,7 +36,7 @@ idx_current_cycle=[idx_current_cycle(training,:);idx_current_cycle(test,:)];
 filename = 'Output_files\TrainedRNNs\SMA_Control_same\Trained_M1_Hyp_continuousDrake_7.mat';
 info = load_RNN_info(filename);
 % Evaluate 
-[scores,trials_idx] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
+[scores,trials_idx,~,~,~,~,explained] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
 
 [idx_dir,idx_pos,~,idx_dist]=find_idx_conds(trials_idx,info.idx_conds_all,idx_current_cycle);
 
@@ -54,7 +54,7 @@ plot3(scores(rhythmic,1),scores(rhythmic,2),scores(rhythmic,3),'Color',colours(e
 
 plot3(scores(discrete,1),scores(discrete,2),scores(discrete,3),'Color',colours(1,:))
 plot3(scores(discrete(1),1),scores(discrete(1),2),scores(discrete(1),3),'o','MarkerFaceColor',colours(1,:),'MarkerEdgeColor',colours(end,:))
-
+title(['VE = ' num2str(sum(explained(1:3)))])
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,7 +69,7 @@ idx_current_cycle=[idx_current_cycle(training,:);idx_current_cycle(test,:)];
 
 filename = 'Output_files\TrainedRNNs\SMA_Control_different\Trained_M1_Hyp_separateDrake_4.mat';
 info = load_RNN_info(filename);
-[scores,trials_idx] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
+[scores,trials_idx,~,~,~,~,explained] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
 
 [idx_dir,idx_pos,~,idx_dist]=find_idx_conds(trials_idx,info.idx_conds_all,idx_current_cycle);
 
@@ -84,6 +84,6 @@ plot3(scores(rhythmic,1),scores(rhythmic,2),scores(rhythmic,3),'Color',colours(e
 
 plot3(scores(discrete,1),scores(discrete,2),scores(discrete,3),'Color',colours(1,:))
 plot3(scores(discrete(1),1),scores(discrete(1),2),scores(discrete(1),3),'o','MarkerFaceColor',colours(1,:),'MarkerEdgeColor',colours(end,:))
-
+title(['VE = ' num2str(sum(explained(1:3)))])
 
 end
