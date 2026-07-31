@@ -7,14 +7,14 @@ solutions for the control of rhythmic and discrete arm movements".
 > 
 > Andrea Colins Rodriguez*, Romulo Fuentes, Mark D. Humphries*
 > 
->  [DOI: XX](XX)
+>  [DOI: https://doi.org/10.64898/2026.02.16.706176](https://doi.org/10.64898/2026.02.16.706176)
 
 # Hardware requirements
 This package requires only a standard computer. Examples in Jupyter Notebooks can be executed in Google Colab. 
 
 # Software requirements
 
-- Matlab 2023: To reproduce the figures of the paper.
+- Matlab 2023 or 2024: To reproduce the figures of the paper.
 - Python (and Tensorflow): To train RNNs.
   
 # Data
