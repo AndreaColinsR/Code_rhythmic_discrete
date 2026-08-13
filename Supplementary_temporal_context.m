@@ -56,6 +56,7 @@ plot3(scores(discrete,1),scores(discrete,2),scores(discrete,3),'Color',colours(1
 plot3(scores(discrete(1),1),scores(discrete(1),2),scores(discrete(1),3),'o','MarkerFaceColor',colours(1,:),'MarkerEdgeColor',colours(end,:))
 title(['VE = ' num2str(sum(explained(1:3)))])
 
+view(214,11)
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % (2) RNN trained to output M1 dynamics with an input indicating
@@ -85,5 +86,5 @@ plot3(scores(rhythmic,1),scores(rhythmic,2),scores(rhythmic,3),'Color',colours(e
 plot3(scores(discrete,1),scores(discrete,2),scores(discrete,3),'Color',colours(1,:))
 plot3(scores(discrete(1),1),scores(discrete(1),2),scores(discrete(1),3),'o','MarkerFaceColor',colours(1,:),'MarkerEdgeColor',colours(end,:))
 title(['VE = ' num2str(sum(explained(1:3)))])
-
+view(96,8)
 end

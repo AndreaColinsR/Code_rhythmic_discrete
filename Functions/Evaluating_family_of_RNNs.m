@@ -17,7 +17,7 @@ hold on
 
 ff=dir(['.\*' hyp 'Cousteau' '*']);
 % for supplementary figurs of variants
-if ~strcmp(hyp,'separate')
+if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
     ff=dir(['.\*' 'Cousteau_Hyp_same' '*']);
 end
 
@@ -179,7 +179,7 @@ ndims=4;
 %% i need to rename all files of unbiased hyp according to the other format
 ff=dir(['.\*' hyp '' animal '*']);
 % for variants
-if ~strcmp(hyp,'separate')
+if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
     ff=dir(['.\*'  animal '_Hyp_' hyp  '*']);
 end
 
