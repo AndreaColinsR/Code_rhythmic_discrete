@@ -1,4 +1,4 @@
-function [scores_all,trials_idx,R2,states,Output_edit,Output_RNN]=Eval_RNN_all_conditions(Input,Output,InputTest,OutputTest,NetParams,exec,idx_trial_train,idx_trial_test,do_plot_output)
+function [scores_all,trials_idx,R2,states,Output_edit,Output_RNN,explained]=Eval_RNN_all_conditions(Input,Output,InputTest,OutputTest,NetParams,exec,idx_trial_train,idx_trial_test,do_plot_output)
 % EVAL_RNN_ALL_CONDITIONS Evaluates a trained recurrent neural network (RNN)
 % across training and testing trials, quantifying performance,
 % population dynamics, and generalisation to testing trials.
@@ -101,7 +101,7 @@ Output_RNN=[Output_RNN;Output_RNNTest];
 states=[states_train;states_test];
 
 
-[~,scores_all]=pca(states);
+[~,scores_all,~,~,explained]=pca(states);
 
 R2=[R2 R2_test];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
