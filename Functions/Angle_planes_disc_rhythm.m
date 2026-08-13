@@ -69,7 +69,7 @@ for i_dir=1:Ndir
             Discrete=idx_cycle<1 & idx_dir==i_dir & idx_pos==i_pos;
             NelD=sum(Discrete);
 
-            [~,scores]=pca([states(Discrete,:);states(Rhythmic,:)]);
+            [~,scores,~,~,explained]=pca([states(Discrete,:);states(Rhythmic,:)]);
             plot3(scores(1:NelD,1),scores(1:NelD,2),scores(1:NelD,3),'Color',colour_cycle(1,:))
 
             hold on
@@ -79,7 +79,8 @@ for i_dir=1:Ndir
             plot3(scores(1,1),scores(1,2),scores(1,3),'ok')
 
             plot3(scores(NelD+1:end,1),scores(NelD+1:end,2),scores(NelD+1:end,3),'Color',colour_cycle(5,:),'LineWidth',2)
-            title(['Angle = ' num2str(Angle_dir(i_dir,i_pos),'%.2f')])
+            title(['Angle = ', num2str(round(Angle_dir(i_dir,i_pos))), ', VE = ', num2str(round(sum(explained(1:3)))), '%'])
+            
 
         end
 

@@ -78,7 +78,7 @@ idxPos_prep(idx_nan,:) = [];
 FRicycle_prep_all(idx_nan,:) = [];
 
 %% Perform PCA only on preparation
-[coeff_prep,score_prep]=pca(FRicycle_prep_all);
+[coeff_prep,score_prep,~,~,explained]=pca(FRicycle_prep_all);
 
 
 prepdata.FR=FRicycle_prep_all;
@@ -87,6 +87,7 @@ prepdata.ndir=idxDir_prep;
 prepdata.npos=idxPos_prep;
 prepdata.scores=score_prep;
 prepdata.coeff=coeff_prep;
+prepdata.explained=explained;
 
 end
 

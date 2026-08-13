@@ -48,7 +48,7 @@ idx_Ncycle=idx_Ncycle(exec,:);
 Init_cond_t=nan(2*2,NNdist);
 
 %% Execution subspace
-[~,scores]=pca(states);
+[~,scores,~,~,explained]=pca(states);
 
 Nt=1;
 if size(states,1)>10000
@@ -69,6 +69,7 @@ counter=1;
 
 if do_plot
     colour_dist=plasma(NNdist);
+    hold on
 end
 
 for i_dir=1:2
@@ -101,6 +102,11 @@ for i_dir=1:2
         % Plot bezier curve
         if do_plot && i_dir==2 && i_pos==2
             plot3(B(:,1),B(:,2),B(:,3),'Color',[0.5 0.5 0.5])
+            for i_cycle=1:7
+
+             plot3(center(i_cycle,1),center(i_cycle,2),center(i_cycle,3),'.','MarkerSize',24,'Color',[1 1 1]*i_cycle/(7*2))
+            end
+            title(['VE = ', num2str(round(sum(explained(1:3)))),'%'])
         end
 
 
@@ -119,7 +125,7 @@ for i_dir=1:2
 
             if do_plot && i_dir==2 && i_pos==2
                 plot3(scores(this_cond2,1),scores(this_cond2,2),scores(this_cond2,3),'Color',colour_dist(i_dist,:))
-                hold on
+                
                 plot3(scores(this_cond2(1),1),scores(this_cond2(1),2),scores(this_cond2(1),3),'.','Color',colour_dist(i_dist,:),'MarkerSize',14)
 
             end

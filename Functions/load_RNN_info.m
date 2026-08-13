@@ -53,7 +53,7 @@ function info = load_RNN_info(filename)
 % Andrea Colins
 % 17/12/2025
 
-if contains(filename,'separate')
+if contains(filename,'separate') || contains(filename,'unbiased') || contains(filename,'different') 
 
     load(filename,'inputs','B','W','O','Ob','Output','Test_input','Test_Outputs','idx_cycles_train','idx_pos_train','idx_cycles_test','idx_pos_test','Bipos','Bdir','Initial_state','idx_dir_test','idx_dir_train','Btask')
 else
@@ -73,7 +73,7 @@ info.idx_dir_train=double(idx_dir_train);
 
 %% if separate RNNs, then Btask should be there
 
-if contains(filename,'separate')
+if contains(filename,'separate') || contains(filename,'unbiased') || contains(filename,'different')
     net_params.B=[Bipos',B',Bdir',Btask'];
 else
     net_params.B=[Bipos',B',Bdir'];
