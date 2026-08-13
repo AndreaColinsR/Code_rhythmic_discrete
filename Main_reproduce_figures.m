@@ -12,7 +12,7 @@ function Main_reproduce_figures
 %% Office
 jPCA_path='C:\Users\andre\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
 dPCA_path='C:\Users\andre\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
-% dataset_path = 'C:\Users\andrea.colins\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
+dataset_path = 'C:\Users\andre\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 
 %% home
 % tic
@@ -49,8 +49,8 @@ if plot_supp_figs.do_plot == 1
 end
 %% Figure 1
 animal = 'Drake';
-%Plot_kinematics(animal,dataset_path)
-%test_raster_different_N_cycles(animal)
+Plot_kinematics(animal,dataset_path)
+test_raster_different_N_cycles(animal)
 
 
 
