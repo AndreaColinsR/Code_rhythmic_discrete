@@ -8,6 +8,9 @@ function Main_reproduce_figures
 %
 % 04/09/2025
 % Andrea Colins Rodriguez
+% 
+% 17/08/2025 
+% Scripts were updated to reproduce new supplementary figures
 
 tic
 %% Office
@@ -32,7 +35,7 @@ plot_supp_figs.do_plot = 1; % 1 = Yes, 0 = No.
 
 %% 0. Define PCA trajectories and save results in Output_files folder
 mkdir Output_files
-create_all_output_files(dataset_path)
+%create_all_output_files(dataset_path)
 
 
 
@@ -50,8 +53,8 @@ if plot_supp_figs.do_plot == 1
 end
 %% Figure 1
 animal = 'Drake';
-Plot_kinematics(animal,dataset_path)
-test_raster_different_N_cycles(animal)
+%Plot_kinematics(animal,dataset_path)
+%test_raster_different_N_cycles(animal)
 
 
 
@@ -61,10 +64,12 @@ test_raster_different_N_cycles(animal)
 
 %% Figure 2
 region_name='M1';
+output_region='EMG';
+hypotheses={'same','different'};
 figM1=figure;
 %% Analyse neural recordings 
 testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
-compare_network_families(region_name,figM1,plot_supp_figs)
+compare_network_families(region_name,output_region,hypotheses,figM1,plot_supp_figs)
 
 
 %% Video: 
@@ -76,10 +81,12 @@ i_pos = 1;
 
 %% Figure 3
 region_name='SMA';
+output_region='M1';
+hypotheses={'same','different'};
 figSMA=figure;
 
 testing_Cortical_Data_as_RNN(region_name,figSMA,plot_supp_figs)
-compare_network_families(region_name,figSMA,plot_supp_figs)
+compare_network_families(region_name,output_region,hypotheses,figSMA,plot_supp_figs)
 
 %% Video:
 animal = 'Cousteau';

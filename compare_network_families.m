@@ -1,4 +1,4 @@
-function compare_network_families(region_name,figW,plot_supp_figs)
+function compare_network_families(region_name,output_region,hypotheses,figW,plot_supp_figs)
 % COMPARE_NETWORK_FAMILIES  Simulates and analises the trained RNNs under 
 % each control hypothesis (Same-control RNN family, Different-control RNN family) and plots
 % necessary figures of the paper. This functions requires that the RNNs are
@@ -55,62 +55,41 @@ function compare_network_families(region_name,figW,plot_supp_figs)
 % Andrea Colins Rodriguez
 % 19/12/2025
 
-
-plot_supp = plot_supp_figs.do_plot;
-
-hyp = {'same','different'};
 animal = {'Cousteau','Drake'};
-output = {'EMG','M1'};
-
-my_dir=pwd;
-
-if strcmp(region_name,'M1')
-
-    folders = {'.\Output_files\TrainedRNNs\M1_same'
-        '.\Output_files\TrainedRNNs\M1_different'};
-
-    output_region='EMG';
-
-elseif strcmp(region_name,'SMA')
-     folders = {'.\Output_files\TrainedRNNs\SMA_same'
-        '.\Output_files\TrainedRNNs\SMA_different'};
-
-    output_region='M1';
-
-end
-
-%% Extract results from Cortical recording
+Nanimals=length(animal);
+%% Extract results from Cortical recordings
 results = get_neural_trajectories_info(region_name,output_region,animal);
 
 
+
+
 %% Extract results from RNNs 
+plot_supp = plot_supp_figs.do_plot;
+Nhyps=length(hypotheses);
 
-NNets = 20; %% Trained Networks per family
-Nfamilies = 2; %% Number of families (same and different)
-Nnets = 40; %% total number of RNNs (NNnets*2 animals)
-corr_CC = nan(Nnets*Nfamilies,4);
+ff=dir(['.\Output_files\TrainedRNNs\' region_name '_' hypotheses{1} '\*' hypotheses{1} '_' animal{1} '*']);
+NNets = length(ff); %% Trained Networks per hypothesis
+Nnets = NNets*Nanimals; %% total number of RNNs (NNnets*2 animals)
+corr_CC = nan(Nnets*Nhyps,4);
 idx_family=corr_CC;
-Angle_rotRNN=nan(NNets*2,Nfamilies);
-MinDist=nan(NNets*2,2,Nfamilies);
-Dist_prep_onset=nan(NNets*2,Nfamilies);
+Angle_rotRNN=nan(NNets*Nanimals,Nhyps);
+MinDist=nan(NNets*Nanimals,2,Nhyps);
+Dist_prep_onset=nan(NNets*Nanimals,Nhyps);
 
+my_dir=pwd;
 
-for i_family=1:Nfamilies
+for i_hyp=1:Nhyps
+    
+    folder=['.\Output_files\TrainedRNNs\' region_name '_' hypotheses{i_hyp}];
 
+    cd(folder)
 
-    cd(folders{i_family})
-    addpath('.\..\..\..\') %% add path of main code
-    if i_family>1
-        type = 2;
-    else 
-        type = 1;
-    end
-
-    [corr_CC(((i_family-1)*Nnets+1:i_family*Nnets),:),Angle_rotRNN(:,i_family),MinDist(:,:,i_family),Dist_prep_onset(:,i_family)] = Evaluating_family_of_RNNs(hyp{type},region_name,my_dir,plot_supp_figs,figW,i_family);
-    idx_family(((i_family-1)*Nnets+1:i_family*Nnets))=i_family;
+    [corr_CC(((i_hyp-1)*Nnets+1:i_hyp*Nnets),:),Angle_rotRNN(:,i_hyp),MinDist(:,:,i_hyp),Dist_prep_onset(:,i_hyp)] = Evaluating_family_of_RNNs(hypotheses{i_hyp},region_name,my_dir,plot_supp_figs,figW,i_hyp);
+    idx_family(((i_hyp-1)*Nnets+1:i_hyp*Nnets))=i_hyp;
 
     cd(my_dir)
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot results 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
