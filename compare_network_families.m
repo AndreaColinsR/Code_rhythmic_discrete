@@ -58,8 +58,9 @@ function compare_network_families(region_name,figW,plot_supp_figs)
 
 plot_supp = plot_supp_figs.do_plot;
 
-hyp={'continuous','separate'};
-animal={'Cousteau','Drake'};
+hyp = {'same','different'};
+animal = {'Cousteau','Drake'};
+output = {'EMG','M1'};
 
 my_dir=pwd;
 

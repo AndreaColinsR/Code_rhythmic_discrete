@@ -15,11 +15,11 @@ plot_supp = plot_supp_figs.do_plot;
 
 hold on
 
-ff=dir(['.\*' hyp 'Cousteau' '*']);
+ff=dir(['.\*' hyp '_Cousteau' '*']);
 % for supplementary figurs of variants
-if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
-    ff=dir(['.\*' 'Cousteau_Hyp_same' '*']);
-end
+% if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
+%     ff=dir(['.\*' 'Cousteau_Hyp_same' '*']);
+% end
 
 Nnets=length(ff);
 animal = {'Cousteau','Drake'}; % 'E' or 'F'
@@ -177,17 +177,17 @@ start=1;
 ndims=4;
 
 %% i need to rename all files of unbiased hyp according to the other format
-ff=dir(['.\*' hyp '' animal '*']);
+ff=dir(['.\*' hyp '_' animal '*']);
 % for variants
-if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
-    ff=dir(['.\*'  animal '_Hyp_' hyp  '*']);
-end
+% if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
+%     ff=dir(['.\*'  animal '_Hyp_' hyp  '*']);
+% end
 
 Nnetworks=20;
 
 figure(figW)
 
-if strcmp(hyp,'separate')
+if strcmp(hyp,'different')
     load(['.\..\..\RNNs_Inputs\M1_' animal '_different.mat'],'exec','idx_current_cycle')
     training=[0,1,2,3,16,17,18,19]+1;
     test = 5:16 ;
@@ -289,13 +289,15 @@ for iNet=1:Nnetworks
         figure(figW)
         %% Euclidean distance between trajectories
         Dist_all_prep(:,:,iNet) = Distances_across_conditions(prepdata.scores(:,1:ndims),prepdata.ndir,prepdata.npos,prepdata.ndist);
+        
+       
 
-        if strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_14_SLen300v2.mat') || ...
-                strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_12_Orth_start.mat')  || ...
-                strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') ||...
-                strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat') ||...
-                strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_18.mat') ||...
-                strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_13.mat')
+        if strcmp(ff(iNet).name,'Trained_EMG_same_Drake_14.mat') || ...
+                strcmp(ff(iNet).name,'Trained_EMG_different_Drake_12.mat')  || ...
+                strcmp(ff(iNet).name,'Trained_M1_same_Cousteau_1.mat') ||...
+                strcmp(ff(iNet).name,'Trained_M1_different_Cousteau_10.mat')
+                %strcmp(ff(iNet).name,'Trained_EMG_different_Drake_18.mat') ||...
+                %strcmp(ff(iNet).name,'Trained_EMG_same_Drake_13.mat')
 
             states2=states-mean(states);
             states2=states2./repmat(range(states2)+5,size(states,1),1);
@@ -327,19 +329,17 @@ for iNet=1:Nnetworks
                 plot_preparation_all_conditions(prepdata.scores,prepdata.ndir, prepdata.npos,prepdata.ndist,plot_column)
                 title(['VE = ', num2str(round(sum(prepdata.explained(1:3)))),'%'])
                 figure(figW)
-            else
 
             end
-        else
 
         end
 
         
 
-        if  strcmp(ff(iNet).name, 'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat') ||...
-                strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') ||...
-                strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_18.mat') ||...
-                strcmp(ff(iNet).name,'Trained_EMG_Hyp_continuousDrake_13.mat')
+        if  strcmp(region_name,'SMA') && (strcmp(ff(iNet).name, 'Trained_M1_different_Cousteau_10.mat') ||...
+                strcmp(ff(iNet).name,'Trained_M1_same_Cousteau_1.mat') ||...
+                strcmp(ff(iNet).name,'Trained_EMG_different_Drake_18.mat') ||...
+                strcmp(ff(iNet).name,'Trained_EMG_same_Drake_13.mat'))
             figure(figW)
             subplot(4,4,8+plot_column)
             plot_init = 1;
@@ -350,7 +350,7 @@ for iNet=1:Nnetworks
         end
 
         
-        if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousCousteau_5_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateCousteau_1_Orth_start.mat'))
+        if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_same_Cousteau_5.mat') || strcmp(ff(iNet).name,'Trained_EMG_different_Cousteau_1.mat'))
             plot_LDS = 1;
         else
             plot_LDS = 0;
@@ -362,7 +362,11 @@ for iNet=1:Nnetworks
 
         start=start+4;
 
-        if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_Hyp_continuousDrake_12_SLen300v2.mat') || strcmp(ff(iNet).name,'Trained_EMG_Hyp_separateDrake_10_Orth_start.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_continuousCousteau_1.mat') || strcmp(ff(iNet).name,'Trained_M1_Hyp_separateCousteau_10_Orth_start.mat'))
+        %% dPCA examples
+        if plot_supp && (strcmp(ff(iNet).name, 'Trained_EMG_same_Drake_12.mat') ||...
+                strcmp(ff(iNet).name,'Trained_EMG_different_Drake_10.mat') ||...
+                strcmp(ff(iNet).name,'Trained_M1_same_Cousteau_1.mat') ||...
+                strcmp(ff(iNet).name,'Trained_M1_different_Cousteau_10.mat'))
          %if plot_supp
             figure(dpca_fig)
             %figure

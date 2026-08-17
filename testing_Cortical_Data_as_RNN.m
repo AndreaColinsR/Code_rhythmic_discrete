@@ -82,7 +82,7 @@ end
 
 for i_animal=1:Nanimals
 
-    load(['.\Output_files\scores_' animal{i_animal} '_'  region_name '.mat'],'FR','scores','idx_dir','idx_pos','idx_dist','exec','idx_Ncycle')
+    load(['.\Output_files\scores_' animal{i_animal} '_'  region_name '.mat'],'FR','scores','idx_dir','idx_pos','idx_dist','exec','idx_Ncycle','explained')
      
     %% PLot example trajectories
     if (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'SMA'))
@@ -110,6 +110,7 @@ for i_animal=1:Nanimals
         xlabel('PC 1')
         ylabel('PC 2')
         zlabel('PC 3')
+        title(['VE = ', num2str(round(sum(explained(1:3)))),'%'])
     end
     
     prepdata = get_preparation(FR,idx_dir, idx_pos, idx_dist,exec);
@@ -119,6 +120,7 @@ for i_animal=1:Nanimals
         if (strcmp(animal{i_animal},'Cousteau') && strcmp(region_name,'M1')) || (strcmp(animal{i_animal},'Drake') && strcmp(region_name,'SMA')) 
                 figure(prep_fig)
             plot_preparation_all_conditions(prepdata.scores,prepdata.ndir, prepdata.npos,prepdata.ndist,column)
+            title(['VE = ', num2str(round(sum(prepdata.explained(1:3)))),'%'])
         end
     end
 

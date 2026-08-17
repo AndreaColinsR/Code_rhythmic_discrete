@@ -9,6 +9,7 @@ function Main_reproduce_figures
 % 04/09/2025
 % Andrea Colins Rodriguez
 
+tic
 %% Office
 jPCA_path='C:\Users\andre\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
 dPCA_path='C:\Users\andre\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
@@ -31,7 +32,7 @@ plot_supp_figs.do_plot = 1; % 1 = Yes, 0 = No.
 
 %% 0. Define PCA trajectories and save results in Output_files folder
 mkdir Output_files
-%create_all_output_files(dataset_path)
+create_all_output_files(dataset_path)
 
 
 
@@ -67,8 +68,8 @@ compare_network_families(region_name,figM1,plot_supp_figs)
 
 
 %% Video: 
-RNN_name_same = 'Scores_Trained_EMG_Hyp_continuousDrake_14_SLen300v2';
-RNN_name_diff = 'Scores_Trained_EMG_Hyp_separateDrake_12_Orth_start';
+RNN_name_same = 'Scores_Trained_EMG_same_Drake_14';
+RNN_name_diff = 'Scores_Trained_EMG_different_Drake_12';
 i_dir = 2;
 i_pos = 1;
 %play_video_rhythmic_discrete(region_name,animal,RNN_name_same,RNN_name_diff,i_dir,i_pos)
@@ -82,8 +83,8 @@ compare_network_families(region_name,figSMA,plot_supp_figs)
 
 %% Video:
 animal = 'Cousteau';
-RNN_name_same = 'Scores_Trained_M1_Hyp_continuousCousteau_1';
-RNN_name_diff = 'Scores_Trained_M1_Hyp_separateCousteau_10_Orth_start';
+RNN_name_same = 'Scores_Trained_M1_same_Cousteau_1';
+RNN_name_diff = 'Scores_Trained_M1_different_Cousteau_10';
 i_dir = 2;
 i_pos = 1;
 %play_video_rhythmic_discrete(region_name,animal,RNN_name_same,RNN_name_diff,i_dir,i_pos)
