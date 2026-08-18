@@ -8,8 +8,8 @@ function Main_reproduce_figures
 %
 % 04/09/2025
 % Andrea Colins Rodriguez
-% 
-% 17/08/2025 
+%
+% 17/08/2025
 % Scripts were updated to reproduce new supplementary figures
 
 tic
@@ -22,7 +22,7 @@ dataset_path = 'C:\Users\andre\OneDrive - Universidad Adolfo Ibanez\Office compu
 % tic
 %  jPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\jPCA_ForDistribution\';
 %  dPCA_path='C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\codes_from_papers\kobak2016';
-% % 
+% %
 % dataset_path = 'C:\Users\Acer\OneDrive - Universidad Adolfo Ibanez\Office computer\Dynamical_systems_Cortex\Data_Russo';
 addpath('.\Functions')
 
@@ -36,7 +36,6 @@ plot_supp_figs.do_plot = 1; % 1 = Yes, 0 = No.
 %% 0. Define PCA trajectories and save results in Output_files folder
 mkdir Output_files
 %create_all_output_files(dataset_path)
-
 
 
 
@@ -67,12 +66,11 @@ region_name='M1';
 output_region='EMG';
 hypotheses={'same','different'};
 figM1=figure;
-%% Analyse neural recordings 
-testing_Cortical_Data_as_RNN(region_name,figM1,plot_supp_figs)
+%% Analyse neural recordings
 compare_network_families(region_name,output_region,hypotheses,figM1,plot_supp_figs)
 
 
-%% Video: 
+%% Video:
 RNN_name_same = 'Scores_Trained_EMG_same_Drake_14';
 RNN_name_diff = 'Scores_Trained_EMG_different_Drake_12';
 i_dir = 2;
@@ -97,13 +95,22 @@ i_pos = 1;
 %play_video_rhythmic_discrete(region_name,animal,RNN_name_same,RNN_name_diff,i_dir,i_pos)
 
 
-%% Supplementary figure different inputs 
+%% Supplementary figure different inputs
 if plot_supp_figs.do_plot == 1
 
     figure(plot_supp_figs.TC)
     Supplementary_temporal_context
     Angle_mov_type_unbiasedRNN
     Supplementary_variants_models_M1_different_controls
+
+    %%%%%%%%%%%%%%%%%%%%%%%%% Supp figure 7
+    plot_supp_figs2.do_plot = 0; % 1 = Yes, 0 = No.
+    region_name='SMA';
+    output_region='EMG';
+    hypotheses={'EMG_same','EMG_different'};
+    figSMA2=figure;
+    compare_network_families(region_name,output_region,hypotheses,figSMA2,plot_supp_figs2)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 toc
 end

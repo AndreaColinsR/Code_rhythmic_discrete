@@ -16,10 +16,7 @@ plot_supp = plot_supp_figs.do_plot;
 hold on
 
 ff=dir(['.\*' hyp '_Cousteau' '*']);
-% for supplementary figurs of variants
-% if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
-%     ff=dir(['.\*' 'Cousteau_Hyp_same' '*']);
-% end
+
 
 Nnets=length(ff);
 animal = {'Cousteau','Drake'}; % 'E' or 'F'
@@ -178,16 +175,13 @@ ndims=4;
 
 %% i need to rename all files of unbiased hyp according to the other format
 ff=dir(['.\*' hyp '_' animal '*']);
-% for variants
-% if ~strcmp(hyp,'separate') & ~strcmp(hyp,'continuous')
-%     ff=dir(['.\*'  animal '_Hyp_' hyp  '*']);
-% end
+
 
 Nnetworks=20;
 
 figure(figW)
 
-if strcmp(hyp,'different')
+if contains(hyp,'different')
     load(['.\..\..\RNNs_Inputs\M1_' animal '_different.mat'],'exec','idx_current_cycle')
     training=[0,1,2,3,16,17,18,19]+1;
     test = 5:16 ;
@@ -200,6 +194,8 @@ else
     plot_column = 1;
 
 end
+
+
 
 
 exec=[exec(training,:);exec(test,:)];
@@ -229,6 +225,7 @@ if plot_supp_figs.do_plot == 1
 else
     prep_fig = [];
     dpca_fig = [];
+    plot_supp_figs.LDS = [];
 end
 
 Var_dPCA=nan(Nnetworks,1);
@@ -246,7 +243,7 @@ for iNet=1:Nnetworks
     % Evaluate the trained RNN
     [scores,trials_idx,R2(iNet,:),states,Output_edited,Output_RNN] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,do_plot_output);
 
-
+   
     % post process only if succesful
     if R2(iNet,2)>=0.8
 
@@ -295,9 +292,9 @@ for iNet=1:Nnetworks
         if strcmp(ff(iNet).name,'Trained_EMG_same_Drake_14.mat') || ...
                 strcmp(ff(iNet).name,'Trained_EMG_different_Drake_12.mat')  || ...
                 strcmp(ff(iNet).name,'Trained_M1_same_Cousteau_1.mat') ||...
-                strcmp(ff(iNet).name,'Trained_M1_different_Cousteau_10.mat')
-                %strcmp(ff(iNet).name,'Trained_EMG_different_Drake_18.mat') ||...
-                %strcmp(ff(iNet).name,'Trained_EMG_same_Drake_13.mat')
+                strcmp(ff(iNet).name,'Trained_M1_different_Cousteau_10.mat') ||...
+                strcmp(ff(iNet).name,'Trained_EMG_EMG_different_Drake_18.mat') ||...
+                strcmp(ff(iNet).name,'Trained_EMG_EMG_same_Drake_13.mat')
 
             states2=states-mean(states);
             states2=states2./repmat(range(states2)+5,size(states,1),1);
@@ -338,8 +335,8 @@ for iNet=1:Nnetworks
 
         if  strcmp(region_name,'SMA') && (strcmp(ff(iNet).name, 'Trained_M1_different_Cousteau_10.mat') ||...
                 strcmp(ff(iNet).name,'Trained_M1_same_Cousteau_1.mat') ||...
-                strcmp(ff(iNet).name,'Trained_EMG_different_Drake_18.mat') ||...
-                strcmp(ff(iNet).name,'Trained_EMG_same_Drake_13.mat'))
+                strcmp(ff(iNet).name,'Trained_EMG_EMG_different_Drake_18.mat') ||...
+                strcmp(ff(iNet).name,'Trained_EMG_EMG_same_Drake_13.mat'))
             figure(figW)
             subplot(4,4,8+plot_column)
             plot_init = 1;
