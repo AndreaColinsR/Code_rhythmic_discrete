@@ -37,8 +37,7 @@ plot_supp_figs.do_plot = 1; % 1 = Yes, 0 = No.
 mkdir Output_files
 %create_all_output_files(dataset_path)
 
-
-
+    
 if plot_supp_figs.do_plot == 1
     % if plotting supplemetary figures, then create all the necessary
     % figures
@@ -111,6 +110,27 @@ if plot_supp_figs.do_plot == 1
     figSMA2=figure;
     compare_network_families(region_name,output_region,hypotheses,figSMA2,plot_supp_figs2)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    %%%%%%%%%%%%%%%%%%%%%%%%% Supp figure 10
+    Supplementary_variants_models_SMA_same_controls
+
+    plot_supp_figs3.do_plot = 0; % 1 = Yes, 0 = No.
+    region_name='SMA';
+    output_region='M1';
+    hypotheses={'same_variant_height'};
+    figSMA3=figure;
+    compare_network_families(region_name,output_region,hypotheses,figSMA3,plot_supp_figs3)
+
+    plot_supp_figs4.do_plot = 0; % 1 = Yes, 0 = No.
+    region_name='SMA';
+    output_region='M1';
+    hypotheses={'same_variant_slope'};
+    figSMA4=figure;
+    compare_network_families(region_name,output_region,hypotheses,figSMA4,plot_supp_figs4)
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 end
 toc
 end

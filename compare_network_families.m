@@ -74,7 +74,7 @@ corr_CC = nan(Nnets*Nhyps,4);
 idx_family=corr_CC;
 Angle_rotRNN=nan(NNets*Nanimals,Nhyps);
 MinDist=nan(NNets*Nanimals,2,Nhyps);
-Dist_prep_onset=nan(NNets*Nanimals,Nhyps);
+Dist_prep_onset=nan(NNets*Nanimals,2);
 
 my_dir=pwd;
 
