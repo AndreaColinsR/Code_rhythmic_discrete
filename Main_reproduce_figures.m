@@ -103,6 +103,7 @@ if plot_supp_figs.do_plot == 1
     figure(plot_supp_figs.TC)
     Supplementary_temporal_context
     Angle_mov_type_unbiasedRNN
+    Supplementary_variants_models_M1_different_controls
 end
 toc
 end
