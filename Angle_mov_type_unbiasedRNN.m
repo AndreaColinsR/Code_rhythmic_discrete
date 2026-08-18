@@ -1,14 +1,15 @@
 function Angle_mov_type_unbiasedRNN
 
+hypothesis = 'unconstrained';
 
-folderM1 = '.\Output_files\TrainedRNNs\M1_unbiased';
+folderM1 = ['.\Output_files\TrainedRNNs\M1_' hypothesis];
 
-folderSMA = '.\Output_files\TrainedRNNs\SMA_unbiased';
+folderSMA = ['.\Output_files\TrainedRNNs\SMA_' hypothesis];
 
 files = dir([folderSMA '\*.mat']);
 
 figure 
-subplot(2,2,1)
+subplot(2,2,2)
 hold on
 angles_random=control_angles(length(files));
 
@@ -34,22 +35,22 @@ area = 'SMA';
 
 subplot(4,3,11)
 rec_number = 4;
-plot_dynamics_different(animal,rec_number,area,i_dir,i_pos)
+plot_dynamics_different(animal,rec_number,area,i_dir,i_pos,hypothesis)
 
 subplot(4,3,12)
 rec_number = 19;
-plot_dynamics_different(animal,rec_number,area,i_dir,i_pos)
+plot_dynamics_different(animal,rec_number,area,i_dir,i_pos,hypothesis)
 
 
 
 area = 'M1';
 subplot(4,3,9)
 rec_number = 1;
-plot_dynamics_different(animal,rec_number,area,i_dir,i_pos)
+plot_dynamics_different(animal,rec_number,area,i_dir,i_pos,hypothesis)
 
 subplot(4,3,8)
 rec_number = 8;
-plot_dynamics_different(animal,rec_number,area,i_dir,i_pos)
+plot_dynamics_different(animal,rec_number,area,i_dir,i_pos,hypothesis)
 
 
 end
@@ -58,9 +59,6 @@ function theta=control_angles(N)
 
 theta=nan(N,1);
 for i=1:N
-    %create 2 random vectors
-    %u=normrnd(0, 0.3,50,1);
-    %v=normrnd(0, 0.3,50,1);
 
     u=randn(50,1);
     v=randn(50,1);
@@ -74,8 +72,6 @@ end
 function theta=angle_between_vectors(u,v)
 
 theta=subspace(u(:),v(:))*180/pi;
-%CosTheta = max(min(dot(u, v) / (norm(u) * norm(v)), 1), -1);
-%theta = real(acos(CosTheta))*180/pi;
 end
 
 function compute_angle(folder,i)
@@ -99,7 +95,7 @@ plot_fancy_errorbars(i,theta,[0.9 0.1 0.1])
 plot(i,median(theta),'o')
 end
 
-function plot_dynamics_different(animal,i,area,i_dir,i_pos)
+function plot_dynamics_different(animal,i,area,i_dir,i_pos,hyp)
 load(['.\Output_files\RNNs_Inputs\' area '_' animal '_different.mat'],'exec','idx_current_cycle')
 training=[0,1,2,3,16,17,18,19]+1;
 test = 5:16 ;
@@ -111,7 +107,7 @@ if strcmp(area,'SMA')==1
 else
     output='EMG';
 end
-filename = ['Output_files\TrainedRNNs\' area '_unbiased\Trained_' output '_Hyp_unbiased' animal '_' num2str(i) '.mat'];
+filename = ['Output_files\TrainedRNNs\' area '_' hyp '\Trained_' output '_Hyp_unbiased' animal '_' num2str(i) '.mat'];
 
 info = load_RNN_info(filename);
 [scores,trials_idx,~,~,~,~,explained] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
