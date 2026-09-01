@@ -206,7 +206,12 @@ if strcmp(region_name,'M1')
 else
     subplot(Nplots,Nplots,12)
     hold on
-    errorbar(mean(Init_cond_t_all,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t_all,'omitnan'),'.-k','horizontal')
+    plot([0 1],[3 3],'Color',[0.5 0.5 0.5],'LineWidth',2)
+    x= mean(Init_cond_t,'omitnan');
+    for i=1:5
+        plot(x(i),3,'.','MarkerSize',24,'Color',colour_dist(i,:))
+    end
+    %errorbar(mean(Init_cond_t_all,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t_all,'omitnan'),'.-k','horizontal')
 
 end
 

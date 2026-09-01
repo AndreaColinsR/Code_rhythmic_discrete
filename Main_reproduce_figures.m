@@ -99,7 +99,9 @@ if plot_supp_figs.do_plot == 1
 
     figure(plot_supp_figs.TC)
     Supplementary_temporal_context
+    %%%%%%%%%%%%%%%%%%%%%%%%% Supp figure 3
     Angle_mov_type_unbiasedRNN
+    %%%%%%%%%%%%%%%%%%%%%%%%% Supp figure 6
     Supplementary_variants_models_M1_different_controls
 
     %%%%%%%%%%%%%%%%%%%%%%%%% Supp figure 7

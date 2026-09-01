@@ -264,7 +264,7 @@ exec=[exec(training,:);exec(test,:)];
 idx_current_cycle=[idx_current_cycle(training,:);idx_current_cycle(test,:)];
 
 info = load_RNN_info(filename);
-[scores,trials_idx,R2,~,Output_edited,Output_RNN] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
+[scores,trials_idx,R2,~,Output_edited,Output_RNN,explained] = Eval_RNN_all_conditions(info.Input,info.Output,info.Test_input,info.Test_Outputs,info.net_params,exec,info.idx_conditions_train,info.idx_conditions_test,0);
 R_final=R2(2);
 
 [idx_dir,idx_pos,~,idx_dist]=find_idx_conds(trials_idx,info.idx_conds_all,idx_current_cycle);
@@ -290,13 +290,13 @@ corr_CC=mean(r);
 %% plots
 if R_final>=0.8 && do_plot
     figure
-    plot_dynamics_and_output(idx_dir,i_dir,idx_pos,i_pos,idx_dist,Output_edited,Output_RNN,R_final,i,scores)
+    plot_dynamics_and_output(idx_dir,i_dir,idx_pos,i_pos,idx_dist,Output_edited,Output_RNN,R_final,i,scores,explained)
     
 end
 
 end
 
-function plot_dynamics_and_output(idx_dir,i_dir,idx_pos,i_pos,idx_dist,Output_edited,Output_RNN,R_final,i,scores)
+function plot_dynamics_and_output(idx_dir,i_dir,idx_pos,i_pos,idx_dist,Output_edited,Output_RNN,R_final,i,scores,explained)
 discrete = find(idx_dir == i_dir & idx_pos == i_pos & idx_dist == 0.5);
 rhythmic = find(idx_dir == i_dir & idx_pos== i_pos & idx_dist == 7);
 Ndist = numel(unique(idx_dist));
@@ -321,7 +321,7 @@ title(['R output = ',num2str(R_final)])
 
 subplot(2,3,5)
 
-title(['Recording number = ' num2str(i)])
+title(['Recording number = ' num2str(i) ' VE = ' num2str(sum(explained(1:3)))])
 hold on
 plot3(scores(rhythmic(1),1),scores(rhythmic(1),2),scores(rhythmic(1),3),'o','MarkerFaceColor',colours(end,:),'MarkerEdgeColor',colours(end,:))
 plot3(scores(rhythmic,1),scores(rhythmic,2),scores(rhythmic,3),'Color',colours(end,:))

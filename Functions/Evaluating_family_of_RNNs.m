@@ -142,10 +142,15 @@ if strcmp(region_name,'SMA')
     %% SMA plots
     subplot(4,4,12)
     hold on
-    errorbar(mean(Init_cond_t,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t,'omitnan'),'.-','horizontal','Color',colour_animal(1,:))
+    plot([0 1],[3-ifamily 3-ifamily],'Color',[0.5 0.5 0.5],'LineWidth',2)
+    x= mean(Init_cond_t,'omitnan');
+    for i=1:5
+        plot(x(i),3-ifamily,'.','MarkerSize',24,'Color',colour_dist(i,:))
+    end
+    %errorbar(mean(Init_cond_t,'omitnan'),[0.5 1 2 4 7],std(Init_cond_t,'omitnan'),'.-','horizontal','Color',colour_animal(1,:))
     xlim([0 1])
-    yticks([0.5 1 2 4 7])
-    ylabel('Number of cycles')
+    %yticks([0.5 1 2 4 7])
+    %ylabel('Number of cycles')
     xlabel('Position trajectory at mov onset')
     xlim([-0.1 1])
 
