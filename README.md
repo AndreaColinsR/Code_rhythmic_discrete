@@ -24,7 +24,7 @@ All data used for the analyses were published by Russo et al. (2020) and can be 
 ## Dependencies
 This code performs jPCA and dPCA on Matlab. The toolboxes required for these analyses can be downloaded here:
 -  dPCA: [dPCA toolbox](https://github.com/machenslab/dPCA)
--  jPCA: [dPCA toolbox](https://churchland.zuckermaninstitute.columbia.edu/content/code)
+-  jPCA: [djPCA toolbox](https://churchland.zuckermaninstitute.columbia.edu/content/code)
 
 ## Reproducing figures of the papers
 1. Download the data of the "Two-target cycling task" from Russo et al. 2020 from its [repository](https://data.mendeley.com/datasets/tfcwp8bp5j/1)
